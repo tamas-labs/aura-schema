@@ -1,0 +1,373 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/column-configs/badge.schema.json",
+    "title": "Aura `badge` column config",
+    "description": "Bootstrap badge cell. Label and colour resolve in one of three modes: static (`value` / `field` with a fixed `variant`), value → config `mapping`, or boolean `trueValue` / `falseValue`. In counter mode `prefix` / `suffix`, `maxValue` (overflow renders `{maxValue}{suffix}`) and `showZero` apply.",
+    "$defs": {
+        "badgeMappingEntry": {
+            "description": "One badge configuration — used as a `mapping` entry and as `trueValue` / `falseValue`.",
+            "type": "object",
+            "properties": {
+                "label": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "variant": {
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "icon": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "class": {
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                }
+            }
+        },
+        "badgeConfig": {
+            "description": "Bootstrap badge cell. Label and colour resolve in one of three modes: static (`value` / `field` with a fixed `variant`), value → config `mapping`, or boolean `trueValue` / `falseValue`. In counter mode `prefix` / `suffix`, `maxValue` (overflow renders `{maxValue}{suffix}`) and `showZero` apply.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Discriminator. Selects the badge renderer.",
+                    "type": "string",
+                    "const": "badge"
+                },
+                "field": {
+                    "description": "Item field whose value drives the badge.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "value": {
+                    "description": "Fixed label text, used instead of `field`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "variant": {
+                    "description": "Base Bootstrap colour, rendered as `text-bg-{variant}`.",
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "pill": {
+                    "description": "Render as a pill (`rounded-pill`).",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "size": {
+                    "description": "Size variant.",
+                    "$ref": "../common.schema.json#/$defs/size"
+                },
+                "mapping": {
+                    "description": "Value → badge config lookup, keyed by the resolved value.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "propertyNames": {
+                                "type": "string"
+                            },
+                            "additionalProperties": {
+                                "$ref": "#/$defs/badgeMappingEntry"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "trueValue": {
+                    "description": "Badge config used when the value is truthy.",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/badgeMappingEntry"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "falseValue": {
+                    "description": "Badge config used when the value is falsy.",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/badgeMappingEntry"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "showZero": {
+                    "description": "Render the badge when the numeric value is 0. Defaults to `true`.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "maxValue": {
+                    "description": "Cap on the displayed number; above it the badge renders `{maxValue}{suffix}`.",
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "suffix": {
+                    "description": "Overflow marker appended past `maxValue`, e.g. `+`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "prefix": {
+                    "description": "Text prepended to the label, e.g. `#`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "icon": {
+                    "description": "Key into the host app’s `icons` config registry, rendered as an `<i>` glyph.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "iconPosition": {
+                    "description": "Icon placement relative to the label.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["start", "end"]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "description": "Text colour of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "background": {
+                    "description": "Background colour behind the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/color"
+                },
+                "align": {
+                    "description": "Alignment of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/align"
+                },
+                "fontSize": {
+                    "description": "Font size of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/fontSize"
+                },
+                "fontWeight": {
+                    "description": "Font weight of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/fontWeight"
+                },
+                "italic": {
+                    "description": "Italic text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "normal": {
+                    "description": "Reset italics (`font-style: normal`).",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lineHeight": {
+                    "description": "Line height of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/lineHeight"
+                },
+                "text": {
+                    "description": "Bootstrap text utility class on the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/textUtility"
+                },
+                "uppercase": {
+                    "description": "Upper-case the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lowercase": {
+                    "description": "Lower-case the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "capitalize": {
+                    "description": "Capitalise the first letter of the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "monospace": {
+                    "description": "Monospace font.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "slice": {
+                    "description": "Truncate the rendered text to this many characters.",
+                    "$ref": "../common.schema.json#/$defs/slice"
+                },
+                "number": {
+                    "description": "Format the value as a number.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "currency": {
+                    "description": "Format the value as currency, using the host app’s `currencyCode` config.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "date": {
+                    "description": "Format the value as a date.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "phone": {
+                    "description": "Format the value as a phone number.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "unit": {
+                    "description": "Unit appended to the formatted value.",
+                    "$ref": "../common.schema.json#/$defs/contentUnit"
+                },
+                "padStart": {
+                    "description": "Pad the rendered text to this length on the left, with `chars`.",
+                    "$ref": "../common.schema.json#/$defs/pad"
+                },
+                "padEnd": {
+                    "description": "Pad the rendered text to this length on the right, with `chars`.",
+                    "$ref": "../common.schema.json#/$defs/pad"
+                },
+                "chars": {
+                    "description": "Character(s) used for padding.",
+                    "$ref": "../common.schema.json#/$defs/chars"
+                },
+                "class": {
+                    "description": "CSS classes on the rendered element.",
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                },
+                "style": {
+                    "description": "Inline CSS on the rendered element.",
+                    "$ref": "../common.schema.json#/$defs/style"
+                },
+                "cellRules": {
+                    "description": "Conditional styling for the `<td>` around the badge.",
+                    "$ref": "../common.schema.json#/$defs/cellRules"
+                },
+                "key": {
+                    "description": "Item field the `if` conditions read, and the field substituted into `{key}` placeholders in `route`. Defaults to the column key.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "if": {
+                    "description": "Condition branches; the first matching one is merged over this config.",
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "../common.schema.json#/$defs/conditionalRule"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "else": {
+                    "description": "Config merged in when no `if` branch matched.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": ["type"],
+            "patternProperties": {
+                "^data-": {
+                    "$ref": "../common.schema.json#/$defs/dataAttributeValue"
+                }
+            },
+            "additionalProperties": true,
+            "allOf": [
+                {
+                    "title": "One of `field`, `value`, `mapping`, `trueValue` or `falseValue` is required — unless `if` or `else` branches are given",
+                    "anyOf": [
+                        {
+                            "required": ["field"]
+                        },
+                        {
+                            "required": ["value"]
+                        },
+                        {
+                            "required": ["mapping"]
+                        },
+                        {
+                            "required": ["trueValue"]
+                        },
+                        {
+                            "required": ["falseValue"]
+                        },
+                        {
+                            "required": ["if"]
+                        },
+                        {
+                            "required": ["else"]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "$ref": "#/$defs/badgeConfig"
+}

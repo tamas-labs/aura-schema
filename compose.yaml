@@ -1,0 +1,9 @@
+# The PHP packaging has no Composer dependencies, so the stock image is enough —
+# unlike laravel-aura, this repo needs no Dockerfile of its own.
+services:
+    php:
+        image: php:8.4-cli-alpine
+        working_dir: /app
+        volumes:
+            - .:/app
+        user: '${UID:-1000}:${GID:-1000}'

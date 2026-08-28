@@ -1,0 +1,15 @@
+{
+    "page": 2,
+    "paginate": 25,
+    "sortable": [
+        { "field": "last_name", "direction": "asc" },
+        { "field": "created_at", "direction": "desc" }
+    ],
+    "searchable": [
+        { "field": "first_name", "term": "ada", "exact": false },
+        { "field": "balance", "min": 0, "max": null }
+    ],
+    "filterable": [{ "field": "status", "values": ["active", "suspended"] }],
+    "globalSearch": "lovelace",
+    "selected": [1, 2, 7]
+}

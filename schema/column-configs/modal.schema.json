@@ -1,0 +1,248 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/column-configs/modal.schema.json",
+    "title": "Aura `modal` column config",
+    "description": "Modal trigger cell. `id` names the modal to open; the trigger is either the nested `content` config, or the `icon` / `button` shorthand the preprocessor expands into one. `destroyModal` is the built-in delete-confirmation modal.",
+    "$defs": {
+        "modalConfig": {
+            "description": "Modal trigger cell. `id` names the modal to open; the trigger is either the nested `content` config, or the `icon` / `button` shorthand the preprocessor expands into one. `destroyModal` is the built-in delete-confirmation modal.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Discriminator. Selects the modal renderer.",
+                    "type": "string",
+                    "const": "modal"
+                },
+                "id": {
+                    "description": "Identifier of the modal to open. `destroyModal` opens Aura’s built-in delete confirmation.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "route": {
+                    "description": "URL the modal submits to; `{key}` placeholders are filled from the row.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "content": {
+                    "description": "Nested column config rendering the trigger — any column type.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "propertyNames": {
+                                "type": "string"
+                            },
+                            "additionalProperties": {}
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "icon": {
+                    "description": "Icon-trigger shorthand: a key into the host app’s `icons` config registry. Normalised into `content`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "variant": {
+                    "description": "Key into the host app’s `variants` config registry, or a Bootstrap colour name. CSS colour syntax is rejected here.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "button": {
+                    "description": "Button-trigger shorthand: the button variant. Normalised into `content`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "value": {
+                    "description": "Text of the button shorthand.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "size": {
+                    "description": "Trigger size.",
+                    "$ref": "../common.schema.json#/$defs/size"
+                },
+                "target": {
+                    "description": "Anchor `target` attribute for a link trigger.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["_blank", "_self", "_parent", "_top"]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "class": {
+                    "description": "CSS classes on the trigger.",
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                },
+                "style": {
+                    "description": "Inline CSS on the trigger.",
+                    "$ref": "../common.schema.json#/$defs/style"
+                },
+                "alt": {
+                    "description": "Accessible label on the trigger.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "title": {
+                    "description": "Tooltip text on the trigger.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "cellRules": {
+                    "description": "Conditional styling for the `<td>` around the trigger.",
+                    "$ref": "../common.schema.json#/$defs/cellRules"
+                },
+                "key": {
+                    "description": "Item field the `if` conditions read, and the field substituted into `{key}` placeholders in `route`. Defaults to the column key.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "if": {
+                    "description": "Condition branches; the first matching one is merged over this config.",
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "../common.schema.json#/$defs/conditionalRule"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "else": {
+                    "description": "Config merged in when no `if` branch matched.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": ["type"],
+            "patternProperties": {
+                "^data-": {
+                    "$ref": "../common.schema.json#/$defs/dataAttributeValue"
+                }
+            },
+            "additionalProperties": true,
+            "allOf": [
+                {
+                    "title": "`id` is required — unless `if` or `else` branches are given",
+                    "anyOf": [
+                        {
+                            "required": ["id"]
+                        },
+                        {
+                            "required": ["if"]
+                        },
+                        {
+                            "required": ["else"]
+                        }
+                    ]
+                },
+                {
+                    "title": "One of `icon`, `button` or `content` is required — unless `if` or `else` branches are given",
+                    "anyOf": [
+                        {
+                            "required": ["icon"]
+                        },
+                        {
+                            "required": ["button"]
+                        },
+                        {
+                            "required": ["content"]
+                        },
+                        {
+                            "required": ["if"]
+                        },
+                        {
+                            "required": ["else"]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "$ref": "#/$defs/modalConfig"
+}

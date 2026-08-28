@@ -1,0 +1,82 @@
+{
+    "name": "@tamas-labs/aura-schema",
+    "version": "1.0.0",
+    "description": "Canonical JSON Schema definition of the Aura data-table wire contract, shared by every Aura package",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        },
+        "./validate": {
+            "types": "./dist/validate.d.ts",
+            "import": "./dist/validate.js"
+        },
+        "./contract.json": "./contract.json",
+        "./schema/*": "./schema/*"
+    },
+    "files": [
+        "dist",
+        "schema",
+        "contract.json"
+    ],
+    "scripts": {
+        "build": "tsc -p tsconfig.build.json",
+        "generate": "npm run bundles:generate && npm run schemas:generate && npm run types:generate",
+        "test": "vitest",
+        "test:php": "docker compose run --rm php php php/smoke.php",
+        "type-check": "tsc --noEmit",
+        "bundles:generate": "node scripts/generate-bundles.mjs",
+        "bundles:check": "node scripts/generate-bundles.mjs --check",
+        "schemas:generate": "node scripts/generate-schemas.mjs",
+        "schemas:check": "node scripts/generate-schemas.mjs --check",
+        "types:generate": "node scripts/generate-types.mjs",
+        "types:check": "node scripts/generate-types.mjs --check",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "quality": "npm run bundles:check && npm run schemas:check && npm run types:check && npm run type-check && npm run format:check && npm test -- run",
+        "prepublishOnly": "npm run quality && npm run build"
+    },
+    "peerDependencies": {
+        "ajv": "^8.17.0"
+    },
+    "peerDependenciesMeta": {
+        "ajv": {
+            "optional": true
+        }
+    },
+    "devDependencies": {
+        "@types/node": "^24.10.0",
+        "ajv": "^8.17.1",
+        "json-schema-to-typescript": "^15.0.4",
+        "prettier": "^3.8.1",
+        "typescript": "^5.6.3",
+        "vitest": "^4.0.9"
+    },
+    "keywords": [
+        "aura",
+        "datatable",
+        "json-schema",
+        "contract",
+        "schema"
+    ],
+    "author": "tamas-labs",
+    "license": "MIT",
+    "engines": {
+        "node": ">=20"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tamas-labs/aura-schema.git"
+    },
+    "bugs": {
+        "url": "https://github.com/tamas-labs/aura-schema/issues"
+    },
+    "homepage": "https://github.com/tamas-labs/aura-schema#readme"
+}

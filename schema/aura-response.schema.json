@@ -1,0 +1,36 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/aura-response.schema.json",
+    "title": "Aura API response",
+    "description": "The JSON one Aura table expects from its endpoint. `header` describes the columns and is required; `items` carries the row data; `body` configures how individual columns render; `meta` / `links` drive the pagination bar. Keys beyond these are ignored.",
+    "type": "object",
+    "properties": {
+        "header": {
+            "description": "Column definitions. Required — without it there is no table to render.",
+            "$ref": "./header.schema.json#/$defs/header"
+        },
+        "body": {
+            "description": "Per-column rendering configuration.",
+            "$ref": "./body.schema.json#/$defs/body"
+        },
+        "footer": {
+            "description": "Footer rows, built from the same cells as the header.",
+            "$ref": "./footer.schema.json#/$defs/footer"
+        },
+        "items": {
+            "description": "The rows. Each entry is one row object, read by the `field` / `key` names the header declares; nested values are reachable with dotted field names. Values are rendered as they arrive — no schema is imposed on them.",
+            "type": "array",
+            "items": {}
+        },
+        "meta": {
+            "description": "Pagination state.",
+            "$ref": "./pagination.schema.json#/$defs/meta"
+        },
+        "links": {
+            "description": "Pagination URLs.",
+            "$ref": "./pagination.schema.json#/$defs/links"
+        }
+    },
+    "required": ["header"],
+    "additionalProperties": true
+}

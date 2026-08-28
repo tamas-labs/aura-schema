@@ -1,0 +1,35 @@
+{
+    "version": "1.0",
+    "dialect": "https://json-schema.org/draft/2020-12/schema",
+    "baseUri": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/",
+    "entrypoints": {
+        "request": "schema/aura-request.schema.json",
+        "response": "schema/aura-response.schema.json"
+    },
+    "bundles": {
+        "request": "schema/bundled/aura-request.bundle.json",
+        "response": "schema/bundled/aura-response.bundle.json"
+    },
+    "schemas": [
+        "schema/aura-request.schema.json",
+        "schema/aura-response.schema.json",
+        "schema/body.schema.json",
+        "schema/common.schema.json",
+        "schema/footer.schema.json",
+        "schema/header.schema.json",
+        "schema/pagination.schema.json",
+        "schema/column-configs/badge.schema.json",
+        "schema/column-configs/button.schema.json",
+        "schema/column-configs/custom.schema.json",
+        "schema/column-configs/icon.schema.json",
+        "schema/column-configs/link.schema.json",
+        "schema/column-configs/modal.schema.json",
+        "schema/column-configs/progress.schema.json",
+        "schema/column-configs/reference.schema.json",
+        "schema/column-configs/static.schema.json"
+    ],
+    "examples": {
+        "request": "schema/examples/request.json",
+        "response": "schema/examples/response.json"
+    }
+}

@@ -1,0 +1,413 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/column-configs/button.schema.json",
+    "title": "Aura `button` column config",
+    "description": "Button cell. The label comes from `field`, `value` or a `mapping` entry; with `route` the button acts as a link.",
+    "$defs": {
+        "buttonMappingEntry": {
+            "description": "One entry of the `mapping` lookup, keyed by the field value.",
+            "type": "object",
+            "properties": {
+                "variant": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "background": {
+                    "$ref": "../common.schema.json#/$defs/color"
+                },
+                "size": {
+                    "$ref": "../common.schema.json#/$defs/size"
+                },
+                "rounded": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "pill": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "disabled": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "icon": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "iconPosition": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["start", "end"]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "title": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "route": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "class": {
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                }
+            }
+        },
+        "buttonConfig": {
+            "description": "Button cell. The label comes from `field`, `value` or a `mapping` entry; with `route` the button acts as a link.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Discriminator. Selects the button renderer.",
+                    "type": "string",
+                    "const": "button"
+                },
+                "field": {
+                    "description": "Item field whose value becomes the button label.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "value": {
+                    "description": "Fixed button label, used instead of `field`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "route": {
+                    "description": "URL template; `{key}` placeholders are filled from the row, dots become slashes, and the host app’s `siteName` is prepended.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "variant": {
+                    "description": "Key into the host app’s `variants` config registry, or a Bootstrap colour name.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "size": {
+                    "description": "Size variant.",
+                    "$ref": "../common.schema.json#/$defs/size"
+                },
+                "rounded": {
+                    "description": "Rounded corners.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "pill": {
+                    "description": "Pill-shaped button (`rounded-pill`).",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "icon": {
+                    "description": "Key into the host app’s `icons` config registry, rendered as an `<i>` glyph.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "iconPosition": {
+                    "description": "Icon placement relative to the label.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["start", "end"]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "disabled": {
+                    "description": "Render the button disabled.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "title": {
+                    "description": "Tooltip text, rendered as `title`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "htmlType": {
+                    "description": "The `type` attribute of the `<button>` element.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["button", "submit", "reset"]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "description": "Text colour of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "background": {
+                    "description": "Background colour behind the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/color"
+                },
+                "align": {
+                    "description": "Alignment of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/align"
+                },
+                "fontSize": {
+                    "description": "Font size of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/fontSize"
+                },
+                "fontWeight": {
+                    "description": "Font weight of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/fontWeight"
+                },
+                "italic": {
+                    "description": "Italic text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "normal": {
+                    "description": "Reset italics (`font-style: normal`).",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lineHeight": {
+                    "description": "Line height of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/lineHeight"
+                },
+                "text": {
+                    "description": "Bootstrap text utility class on the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/textUtility"
+                },
+                "uppercase": {
+                    "description": "Upper-case the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lowercase": {
+                    "description": "Lower-case the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "capitalize": {
+                    "description": "Capitalise the first letter of the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "monospace": {
+                    "description": "Monospace font.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "slice": {
+                    "description": "Truncate the rendered text to this many characters.",
+                    "$ref": "../common.schema.json#/$defs/slice"
+                },
+                "number": {
+                    "description": "Format the value as a number.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "currency": {
+                    "description": "Format the value as currency, using the host app’s `currencyCode` config.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "date": {
+                    "description": "Format the value as a date.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "phone": {
+                    "description": "Format the value as a phone number.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "unit": {
+                    "description": "Unit appended to the formatted value.",
+                    "$ref": "../common.schema.json#/$defs/contentUnit"
+                },
+                "padStart": {
+                    "description": "Pad the rendered text to this length on the left, with `chars`.",
+                    "$ref": "../common.schema.json#/$defs/pad"
+                },
+                "padEnd": {
+                    "description": "Pad the rendered text to this length on the right, with `chars`.",
+                    "$ref": "../common.schema.json#/$defs/pad"
+                },
+                "chars": {
+                    "description": "Character(s) used for padding.",
+                    "$ref": "../common.schema.json#/$defs/chars"
+                },
+                "class": {
+                    "description": "CSS classes on the rendered element.",
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                },
+                "style": {
+                    "description": "Inline CSS on the rendered element.",
+                    "$ref": "../common.schema.json#/$defs/style"
+                },
+                "cellRules": {
+                    "description": "Conditional styling for the `<td>` around the button.",
+                    "$ref": "../common.schema.json#/$defs/cellRules"
+                },
+                "mapping": {
+                    "description": "Value → button config lookup (variant, size, disabled, icon …), selected by `field`.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "propertyNames": {
+                                "type": "string"
+                            },
+                            "additionalProperties": {
+                                "$ref": "#/$defs/buttonMappingEntry"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "key": {
+                    "description": "Item field the `if` conditions read, and the field substituted into `{key}` placeholders in `route`. Defaults to the column key.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "if": {
+                    "description": "Condition branches; the first matching one is merged over this config.",
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "../common.schema.json#/$defs/conditionalRule"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "else": {
+                    "description": "Config merged in when no `if` branch matched.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": ["type"],
+            "patternProperties": {
+                "^data-": {
+                    "$ref": "../common.schema.json#/$defs/dataAttributeValue"
+                }
+            },
+            "additionalProperties": true,
+            "allOf": [
+                {
+                    "title": "One of `field`, `value`, `route`, `icon` or `mapping` is required — unless `if` or `else` branches are given",
+                    "anyOf": [
+                        {
+                            "required": ["field"]
+                        },
+                        {
+                            "required": ["value"]
+                        },
+                        {
+                            "required": ["route"]
+                        },
+                        {
+                            "required": ["icon"]
+                        },
+                        {
+                            "required": ["mapping"]
+                        },
+                        {
+                            "required": ["if"]
+                        },
+                        {
+                            "required": ["else"]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "$ref": "#/$defs/buttonConfig"
+}

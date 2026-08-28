@@ -1,0 +1,708 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/common.schema.json",
+    "title": "Aura shared definitions",
+    "description": "Field-level building blocks shared by the header, body and footer schemas. Every constraint here is generated from the Zod validators that enforce it at runtime.",
+    "$defs": {
+        "flag": {
+            "description": "Boolean switch. `null` is accepted and read as `false`.",
+            "default": false,
+            "anyOf": [
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "align": {
+            "description": "Text alignment inside the cell.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": ["start", "center", "end"]
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "size": {
+            "description": "Size variant.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": ["xs", "sm", "md", "lg", "xl"]
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "bootstrapColor": {
+            "description": "Bootstrap 5 theme colour name.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "primary",
+                        "secondary",
+                        "success",
+                        "danger",
+                        "warning",
+                        "info",
+                        "dark",
+                        "light"
+                    ]
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "color": {
+            "description": "Bootstrap theme colour name, or a CSS colour (`#fff`, `#ffffff`, `rgb(…)`, `rgba(…)`, or a CSS colour keyword). Used for both `color` and `background`.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "primary",
+                        "secondary",
+                        "success",
+                        "danger",
+                        "warning",
+                        "info",
+                        "dark",
+                        "light"
+                    ]
+                },
+                {
+                    "type": "string",
+                    "pattern": "^#([0-9A-F]{3}){1,2}$"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)(?:,\\s*(\\d+(?:\\.\\d+)?))?\\)$"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z]+$"
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "cssClass": {
+            "description": "CSS class names: one string (max 500 chars) or an array of class names (max 50 items, 100 chars each). HTML-sanitised on arrival.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                },
+                {
+                    "minItems": 1,
+                    "maxItems": 50,
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                    }
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "style": {
+            "description": "Inline CSS declaration string (max 1000 chars). HTML-sanitised on arrival.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "maxLength": 1000
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "cssSize": {
+            "description": "CSS length: `'100px'`, `'50%'`, `'2.5rem'` or `'auto'`. Used for both `width` and `height`.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "pattern": "^(\\d+(\\.\\d+)?(px|%|rem)|auto)$"
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "fontSize": {
+            "description": "CSS font-size: a `px`/`rem`/`em`/`%` length, or a keyword (`small`, `large`, `x-large`, …).",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "pattern": "^(\\d+(\\.\\d+)?(px|rem|em|%)|small|medium|large|x-small|x-large|xx-small|xx-large|smaller|larger)$"
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "fontWeight": {
+            "description": "CSS font-weight: a multiple of 100 between 100 and 900 (number or string), or `normal` / `bold` / `lighter` / `bolder`.",
+            "anyOf": [
+                {
+                    "type": "number",
+                    "minimum": 100,
+                    "maximum": 900,
+                    "multipleOf": 100
+                },
+                {
+                    "type": "string",
+                    "pattern": "^(100|200|300|400|500|600|700|800|900|normal|bold|lighter|bolder)$"
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "lineHeight": {
+            "description": "CSS line-height: a positive number, a `px`/`em`/`rem`/`%` length, or `normal`.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "pattern": "^(\\d+(\\.\\d+)?(px|em|rem|%)?|normal)$"
+                },
+                {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "textUtility": {
+            "description": "Bootstrap text utility class; must start with `text-` (e.g. `text-truncate`).",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "pattern": "^text-.+$"
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "slice": {
+            "description": "Truncate the rendered text to this many characters (1–10000).",
+            "anyOf": [
+                {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10000
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "pad": {
+            "description": "Padding length in characters for `padStart` / `padEnd` (0–100).",
+            "anyOf": [
+                {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "chars": {
+            "description": "Character(s) used by `padStart` / `padEnd` (max 10 chars).",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 10
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "colspan": {
+            "description": "Number of columns the cell spans (1–50).",
+            "anyOf": [
+                {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 50
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "rowspan": {
+            "description": "Number of rows the cell spans (1–20).",
+            "anyOf": [
+                {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 20
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "reference": {
+            "description": "Name of the field whose value is sent to the server for sorting/searching instead of this column’s own field (max 100 chars).",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "cellType": {
+            "description": "Cell type marker on a header cell. Formatting types (`number`, `currency`, `date`, `datetime`, `phone`, `time`) format the value; the rest name a `body.columnConfigs` renderer.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "number",
+                        "currency",
+                        "date",
+                        "datetime",
+                        "phone",
+                        "time",
+                        "static",
+                        "icon",
+                        "link",
+                        "modal",
+                        "reference",
+                        "badge",
+                        "progress",
+                        "button",
+                        "custom"
+                    ]
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "fields": {
+            "description": "Field names for a multi-field column (at least one, max 100 chars each). Mutually exclusive with `field`; requires an explicit `key`.",
+            "anyOf": [
+                {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                    }
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "filterElements": {
+            "description": "Options offered by the column filter: either an array of strings/numbers, or an object of `value: label` pairs. When omitted, Aura derives the options from the loaded rows.",
+            "anyOf": [
+                {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "object",
+                    "propertyNames": {
+                        "type": "string"
+                    },
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            {
+                                "type": "number"
+                            }
+                        ]
+                    },
+                    "minProperties": 1
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "unitIdentifier": {
+            "description": "Sanctioned `Intl.NumberFormat` unit identifier.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "acre",
+                        "bit",
+                        "byte",
+                        "celsius",
+                        "centimeter",
+                        "day",
+                        "degree",
+                        "fahrenheit",
+                        "fluid-ounce",
+                        "foot",
+                        "gallon",
+                        "gigabit",
+                        "gigabyte",
+                        "gram",
+                        "hectare",
+                        "hour",
+                        "inch",
+                        "kilobit",
+                        "kilobyte",
+                        "kilogram",
+                        "kilometer",
+                        "liter",
+                        "megabit",
+                        "megabyte",
+                        "meter",
+                        "microsecond",
+                        "mile",
+                        "mile-scandinavian",
+                        "milliliter",
+                        "millimeter",
+                        "millisecond",
+                        "minute",
+                        "month",
+                        "nanosecond",
+                        "ounce",
+                        "percent",
+                        "petabyte",
+                        "pound",
+                        "second",
+                        "stone",
+                        "terabit",
+                        "terabyte",
+                        "week",
+                        "yard",
+                        "year"
+                    ]
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "contentUnit": {
+            "description": "Free-text unit appended to the formatted value (max 50 chars), e.g. `kg`, `%`.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "dataAttributeValue": {
+            "description": "Value of a `data-*` attribute (max 1000 chars). HTML-sanitised on arrival.",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "maxLength": 1000
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "conditionalRule": {
+            "description": "One branch of an `if` array. Exactly one operator key decides whether the branch matches — the first recognised operator key wins, in object key order. Every remaining key is the configuration applied when it matches (its shape is the shape of the config the rule sits in).",
+            "type": "object",
+            "properties": {
+                "eq": {
+                    "description": "Equal to the given value."
+                },
+                "ne": {
+                    "description": "Not equal to the given value."
+                },
+                "neq": {
+                    "description": "Alias of `ne`."
+                },
+                "gt": {
+                    "description": "Greater than the given value."
+                },
+                "bigger": {
+                    "description": "Alias of `gt`."
+                },
+                "gte": {
+                    "description": "Greater than or equal to the given value."
+                },
+                "biggerOrEqual": {
+                    "description": "Alias of `gte`."
+                },
+                "lt": {
+                    "description": "Less than the given value."
+                },
+                "smaller": {
+                    "description": "Alias of `lt`."
+                },
+                "lte": {
+                    "description": "Less than or equal to the given value."
+                },
+                "smallerOrEqual": {
+                    "description": "Alias of `lte`."
+                },
+                "between": {
+                    "description": "Inside the inclusive `[min, max]` range — a two-element array.",
+                    "type": "array",
+                    "prefixItems": [{}, {}],
+                    "minItems": 2,
+                    "maxItems": 2
+                },
+                "in": {
+                    "description": "Contained by the given array.",
+                    "type": "array"
+                },
+                "notIn": {
+                    "description": "Not contained by the given array.",
+                    "type": "array"
+                },
+                "contains": {
+                    "description": "Substring match."
+                },
+                "startsWith": {
+                    "description": "Prefix match."
+                },
+                "endsWith": {
+                    "description": "Suffix match."
+                },
+                "regex": {
+                    "description": "Matches the given regular expression (source string)."
+                },
+                "null": {
+                    "description": "Value is `null` / `undefined` — pass `true`."
+                },
+                "notNull": {
+                    "description": "Value is neither `null` nor `undefined` — pass `true`."
+                },
+                "empty": {
+                    "description": "Value is empty (`null`, empty string, `[]`, `{}`) — pass `true`."
+                },
+                "notEmpty": {
+                    "description": "Value is not empty — pass `true`."
+                },
+                "true": {
+                    "description": "Value is truthy — pass `true`."
+                },
+                "false": {
+                    "description": "Value is falsy — pass `true`."
+                }
+            },
+            "additionalProperties": true
+        },
+        "conditionalConfig": {
+            "description": "Conditional rendering. `key` names the item field the conditions read; each `if` branch that matches is merged over the base config, and `else` applies when none matched.",
+            "type": "object",
+            "properties": {
+                "key": {
+                    "description": "Item field the conditions are evaluated against. Defaults to the column key when omitted.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "if": {
+                    "description": "Condition branches, evaluated in order.",
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/$defs/conditionalRule"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "else": {
+                    "description": "Config applied when no `if` branch matched.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": true
+        },
+        "cellFormattingOptions": {
+            "description": "Visual options applied to the `<td>` element itself.",
+            "type": "object",
+            "properties": {
+                "background": {
+                    "description": "Cell background colour.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "description": "Cell text colour.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "borderTop": {
+                    "description": "Draw the top border.",
+                    "$ref": "#/$defs/flag"
+                },
+                "borderBottom": {
+                    "description": "Draw the bottom border.",
+                    "$ref": "#/$defs/flag"
+                },
+                "borderLeft": {
+                    "description": "Draw the left border.",
+                    "$ref": "#/$defs/flag"
+                },
+                "borderRight": {
+                    "description": "Draw the right border.",
+                    "$ref": "#/$defs/flag"
+                },
+                "borderColor": {
+                    "description": "Border colour.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "borderWidth": {
+                    "description": "Border width, e.g. `3px`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 20
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "padding": {
+                    "description": "Inner padding CSS value, e.g. `8px 16px`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "class": {
+                    "description": "Extra CSS classes on the cell.",
+                    "$ref": "#/$defs/cssClass"
+                },
+                "style": {
+                    "description": "Inline CSS on the cell.",
+                    "$ref": "#/$defs/style"
+                },
+                "opacity": {
+                    "description": "Cell opacity, 0–1.",
+                    "anyOf": [
+                        {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            }
+        },
+        "cellRules": {
+            "description": "Conditional cell styling: the base `cellFormattingOptions` merged with the `if` / `else` branches, whose entries carry `cellFormattingOptions` keys. The same shape drives `body.rowRules` for whole rows.",
+            "anyOf": [
+                {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/cellFormattingOptions"
+                        },
+                        {
+                            "$ref": "#/$defs/conditionalConfig"
+                        }
+                    ]
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        }
+    }
+}

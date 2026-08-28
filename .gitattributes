@@ -1,0 +1,22 @@
+* text=auto eol=lf
+
+# Keep the Composer tarball to the contract and the PHP locator: the JS build
+# artefacts and tooling are of no use to a PHP consumer.
+/.github            export-ignore
+/.gitattributes     export-ignore
+/.prettierignore    export-ignore
+/.prettierrc.json   export-ignore
+/compose.yaml       export-ignore
+/node_modules       export-ignore
+/package.json       export-ignore
+/package-lock.json  export-ignore
+/scripts            export-ignore
+/src                export-ignore
+/tsconfig.json      export-ignore
+/tsconfig.build.json export-ignore
+/vitest.config.ts   export-ignore
+
+# Generated, and large — keep them out of language-statistics and diffs.
+src/schemas.generated.ts linguist-generated=true
+src/types/contract.ts    linguist-generated=true
+schema/bundled/*.json    linguist-generated=true

@@ -1,0 +1,103 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/aura-request.schema.json",
+    "title": "Aura API request",
+    "description": "What Aura sends to the endpoint on every fetch. `POST` / `PUT` / `PATCH` carry it as the JSON body, `GET` / `DELETE` as query parameters (`requestMethod` config, default `POST`). `page` and `paginate` are always present; the rest appear only while the matching feature is active. Sent alongside the `Content-Type: application/json`, `Accept: application/json` and `X-Requested-With: XMLHttpRequest` headers, plus `Authorization: Bearer …` or `X-Site-Token: …` when a `siteToken` is configured.",
+    "type": "object",
+    "properties": {
+        "page": {
+            "description": "Requested page, 1-based.",
+            "type": "integer",
+            "minimum": 1
+        },
+        "paginate": {
+            "description": "Items per page — the page size chosen in the toolbar.",
+            "type": "integer",
+            "minimum": 1
+        },
+        "sortable": {
+            "description": "Active sorts, in the order the user added them. Omitted while nothing is sorted.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "field": {
+                        "description": "Field to sort by — the header cell’s `reference`, if it declares one, otherwise its `field`.",
+                        "type": "string"
+                    },
+                    "direction": {
+                        "description": "Sort direction.",
+                        "type": "string",
+                        "enum": ["asc", "desc"]
+                    }
+                },
+                "required": ["field", "direction"],
+                "additionalProperties": false
+            }
+        },
+        "searchable": {
+            "description": "Active per-column searches. A term search sends `term` (with `exact`); a range search (`between`) sends `min` / `max` instead, either of which may be `null` for an open end. Omitted while nothing is searched.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "field": {
+                        "description": "Field to search in.",
+                        "type": "string"
+                    },
+                    "term": {
+                        "description": "Search term. Absent on a range search.",
+                        "type": "string"
+                    },
+                    "exact": {
+                        "description": "Match the whole value rather than a substring.",
+                        "type": "boolean"
+                    },
+                    "min": {
+                        "description": "Lower bound of a range search; `null` means unbounded.",
+                        "type": ["number", "string", "null"]
+                    },
+                    "max": {
+                        "description": "Upper bound of a range search; `null` means unbounded.",
+                        "type": ["number", "string", "null"]
+                    }
+                },
+                "required": ["field"],
+                "additionalProperties": false
+            }
+        },
+        "filterable": {
+            "description": "Active column filters. Omitted while nothing is filtered.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "field": {
+                        "description": "Field to filter by.",
+                        "type": "string"
+                    },
+                    "values": {
+                        "description": "Values selected in the filter dropdown; the row matches if it equals any of them.",
+                        "type": "array",
+                        "items": {}
+                    }
+                },
+                "required": ["field", "values"],
+                "additionalProperties": false
+            }
+        },
+        "globalSearch": {
+            "description": "Term from the toolbar’s global search box, covering the fields listed in `header.settings.searchableItems`. Omitted while the box is empty.",
+            "type": "string"
+        },
+        "selected": {
+            "description": "Ids of the rows currently selected. Attached at request time only, and omitted when the selection is empty — changing the selection does not itself trigger a fetch.",
+            "type": "array",
+            "items": {
+                "type": ["string", "number"]
+            }
+        }
+    },
+    "required": ["page", "paginate"],
+    "additionalProperties": false
+}

@@ -1,0 +1,264 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/column-configs/icon.schema.json",
+    "title": "Aura `icon` column config",
+    "description": "Icon cell. `icon` and `variant` / `color` are registry keys — the preprocessor resolves them against the host app’s `icons` and `variants` config into the `class` array before rendering. Given a `route`, the glyph is wrapped in a link.",
+    "$defs": {
+        "iconMappingEntry": {
+            "description": "One entry of the `mapping` lookup, keyed by the field value.",
+            "type": "object",
+            "properties": {
+                "icon": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "variant": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "class": {
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                },
+                "title": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "alt": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            }
+        },
+        "iconConfig": {
+            "description": "Icon cell. `icon` and `variant` / `color` are registry keys — the preprocessor resolves them against the host app’s `icons` and `variants` config into the `class` array before rendering. Given a `route`, the glyph is wrapped in a link.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Discriminator. Selects the icon renderer.",
+                    "type": "string",
+                    "const": "icon"
+                },
+                "icon": {
+                    "description": "Key into the host app’s `icons` config registry; resolved into CSS classes.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "class": {
+                    "description": "CSS classes on the `<i>` element. Accepted directly instead of `icon`.",
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                },
+                "variant": {
+                    "description": "Key into the host app’s `variants` config registry, or a Bootstrap colour name; resolved into a `text-{colour}` class. CSS colour syntax is rejected here.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "description": "Alternative to `variant`, resolved the same way.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "size": {
+                    "description": "Size variant.",
+                    "$ref": "../common.schema.json#/$defs/size"
+                },
+                "alt": {
+                    "description": "Accessible label, rendered as `aria-label`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "title": {
+                    "description": "Tooltip text, rendered as `title`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "route": {
+                    "description": "URL template; `{key}` placeholders are filled from the row, dots become slashes, and the host app’s `siteName` is prepended.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "style": {
+                    "description": "Inline CSS on the `<i>` element.",
+                    "$ref": "../common.schema.json#/$defs/style"
+                },
+                "mapping": {
+                    "description": "Value → icon config lookup, applied after the `if` / `else` branches are flattened.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "propertyNames": {
+                                "type": "string"
+                            },
+                            "additionalProperties": {
+                                "$ref": "#/$defs/iconMappingEntry"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "cellRules": {
+                    "description": "Conditional styling for the `<td>` around the icon.",
+                    "$ref": "../common.schema.json#/$defs/cellRules"
+                },
+                "key": {
+                    "description": "Item field the `if` conditions read, and the field substituted into `{key}` placeholders in `route`. Defaults to the column key.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "if": {
+                    "description": "Condition branches; the first matching one is merged over this config.",
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "../common.schema.json#/$defs/conditionalRule"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "else": {
+                    "description": "Config merged in when no `if` branch matched.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": ["type"],
+            "patternProperties": {
+                "^data-": {
+                    "$ref": "../common.schema.json#/$defs/dataAttributeValue"
+                }
+            },
+            "additionalProperties": true,
+            "allOf": [
+                {
+                    "title": "One of `icon`, `class` or `mapping` is required — unless `if` or `else` branches are given",
+                    "anyOf": [
+                        {
+                            "required": ["icon"]
+                        },
+                        {
+                            "required": ["class"]
+                        },
+                        {
+                            "required": ["mapping"]
+                        },
+                        {
+                            "required": ["if"]
+                        },
+                        {
+                            "required": ["else"]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "$ref": "#/$defs/iconConfig"
+}

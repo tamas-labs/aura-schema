@@ -1,0 +1,12 @@
+node_modules
+dist
+vendor
+composer.lock
+package-lock.json
+
+# Generated from schema/*.json — the JSON files are the formatting authority.
+src/schemas.generated.ts
+
+# Generated from schema/*.json — regenerate rather than reformat.
+src/types/contract.ts
+schema/bundled/

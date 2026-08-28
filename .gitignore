@@ -1,0 +1,13 @@
+node_modules/
+dist/
+vendor/
+composer.lock
+coverage/
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# Local-only agent material.
+CLAUDE.md
+.claude/

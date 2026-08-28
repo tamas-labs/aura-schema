@@ -1,0 +1,362 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/column-configs/reference.schema.json",
+    "title": "Aura `reference` column config",
+    "description": "Reference (lookup) cell. Renders one field, several fields joined by `separator`, or the label a `mapping` entry gives for the value — then runs the shared formatter chain over the result.",
+    "$defs": {
+        "referenceMappingEntry": {
+            "description": "One entry of the `mapping` lookup, keyed by the field value.",
+            "type": "object",
+            "properties": {
+                "label": {
+                    "description": "Text rendered for this value.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "background": {
+                    "$ref": "../common.schema.json#/$defs/color"
+                },
+                "align": {
+                    "$ref": "../common.schema.json#/$defs/align"
+                },
+                "fontSize": {
+                    "$ref": "../common.schema.json#/$defs/fontSize"
+                },
+                "fontWeight": {
+                    "$ref": "../common.schema.json#/$defs/fontWeight"
+                },
+                "italic": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "normal": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lineHeight": {
+                    "$ref": "../common.schema.json#/$defs/lineHeight"
+                },
+                "text": {
+                    "$ref": "../common.schema.json#/$defs/textUtility"
+                },
+                "uppercase": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lowercase": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "capitalize": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "monospace": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "slice": {
+                    "$ref": "../common.schema.json#/$defs/slice"
+                },
+                "number": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "currency": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "date": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "phone": {
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "unit": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "padStart": {
+                    "$ref": "../common.schema.json#/$defs/pad"
+                },
+                "padEnd": {
+                    "$ref": "../common.schema.json#/$defs/pad"
+                },
+                "chars": {
+                    "$ref": "../common.schema.json#/$defs/chars"
+                },
+                "class": {
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                }
+            }
+        },
+        "referenceConfig": {
+            "description": "Reference (lookup) cell. Renders one field, several fields joined by `separator`, or the label a `mapping` entry gives for the value — then runs the shared formatter chain over the result.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Discriminator. Selects the reference renderer.",
+                    "type": "string",
+                    "const": "reference"
+                },
+                "field": {
+                    "description": "Item field holding the value.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "fields": {
+                    "description": "Several item fields, rendered joined by `separator`.",
+                    "anyOf": [
+                        {
+                            "minItems": 1,
+                            "maxItems": 50,
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 250
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "separator": {
+                    "description": "Text placed between the `fields` values.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "value": {
+                    "description": "Fixed text. Takes priority over `fields` and `field`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "description": "Text colour of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "background": {
+                    "description": "Background colour behind the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/color"
+                },
+                "align": {
+                    "description": "Alignment of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/align"
+                },
+                "fontSize": {
+                    "description": "Font size of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/fontSize"
+                },
+                "fontWeight": {
+                    "description": "Font weight of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/fontWeight"
+                },
+                "italic": {
+                    "description": "Italic text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "normal": {
+                    "description": "Reset italics (`font-style: normal`).",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lineHeight": {
+                    "description": "Line height of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/lineHeight"
+                },
+                "text": {
+                    "description": "Bootstrap text utility class on the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/textUtility"
+                },
+                "uppercase": {
+                    "description": "Upper-case the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lowercase": {
+                    "description": "Lower-case the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "capitalize": {
+                    "description": "Capitalise the first letter of the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "monospace": {
+                    "description": "Monospace font.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "slice": {
+                    "description": "Truncate the rendered text to this many characters.",
+                    "$ref": "../common.schema.json#/$defs/slice"
+                },
+                "number": {
+                    "description": "Format the value as a number.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "currency": {
+                    "description": "Format the value as currency, using the host app’s `currencyCode` config.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "date": {
+                    "description": "Format the value as a date.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "phone": {
+                    "description": "Format the value as a phone number.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "unit": {
+                    "description": "Unit appended to the formatted value.",
+                    "$ref": "../common.schema.json#/$defs/contentUnit"
+                },
+                "padStart": {
+                    "description": "Pad the rendered text to this length on the left, with `chars`.",
+                    "$ref": "../common.schema.json#/$defs/pad"
+                },
+                "padEnd": {
+                    "description": "Pad the rendered text to this length on the right, with `chars`.",
+                    "$ref": "../common.schema.json#/$defs/pad"
+                },
+                "chars": {
+                    "description": "Character(s) used for padding.",
+                    "$ref": "../common.schema.json#/$defs/chars"
+                },
+                "class": {
+                    "description": "CSS classes on the rendered element.",
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                },
+                "style": {
+                    "description": "Inline CSS on the rendered element.",
+                    "$ref": "../common.schema.json#/$defs/style"
+                },
+                "cellRules": {
+                    "description": "Conditional styling for the `<td>`.",
+                    "$ref": "../common.schema.json#/$defs/cellRules"
+                },
+                "mapping": {
+                    "description": "Value → label + formatting lookup, keyed by the resolved value.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "propertyNames": {
+                                "type": "string"
+                            },
+                            "additionalProperties": {
+                                "$ref": "#/$defs/referenceMappingEntry"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "key": {
+                    "description": "Item field the `if` conditions read, and the field substituted into `{key}` placeholders in `route`. Defaults to the column key.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "if": {
+                    "description": "Condition branches; the first matching one is merged over this config.",
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "../common.schema.json#/$defs/conditionalRule"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "else": {
+                    "description": "Config merged in when no `if` branch matched.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": ["type"],
+            "patternProperties": {
+                "^data-": {
+                    "$ref": "../common.schema.json#/$defs/dataAttributeValue"
+                }
+            },
+            "additionalProperties": true,
+            "allOf": [
+                {
+                    "title": "One of `field`, `fields`, `mapping` or `value` is required — unless `if` or `else` branches are given",
+                    "anyOf": [
+                        {
+                            "required": ["field"]
+                        },
+                        {
+                            "required": ["fields"]
+                        },
+                        {
+                            "required": ["mapping"]
+                        },
+                        {
+                            "required": ["value"]
+                        },
+                        {
+                            "required": ["if"]
+                        },
+                        {
+                            "required": ["else"]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "$ref": "#/$defs/referenceConfig"
+}

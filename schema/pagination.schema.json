@@ -1,0 +1,71 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/pagination.schema.json",
+    "title": "Aura pagination metadata",
+    "description": "The `meta` and `links` blocks of Laravel’s `LengthAwarePaginator`, passed through verbatim. Aura does not validate them; the pagination bar simply renders what arrives, and hides itself when `meta` is missing or `total` is 0.",
+    "$defs": {
+        "meta": {
+            "description": "Pagination state of the current page.",
+            "type": "object",
+            "properties": {
+                "current_page": {
+                    "description": "Current page number, 1-based.",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "from": {
+                    "description": "Index of the first item on the page; `null` on an empty page.",
+                    "type": ["integer", "null"]
+                },
+                "last_page": {
+                    "description": "Number of the last page.",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "path": {
+                    "description": "Base URL of the paginated resource.",
+                    "type": "string"
+                },
+                "per_page": {
+                    "description": "Items per page — the value the request sent as `paginate`.",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "to": {
+                    "description": "Index of the last item on the page; `null` on an empty page.",
+                    "type": ["integer", "null"]
+                },
+                "total": {
+                    "description": "Total number of items across all pages.",
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": ["current_page", "last_page", "per_page", "total"],
+            "additionalProperties": true
+        },
+        "links": {
+            "description": "Page URLs. Informational — Aura paginates by sending `page` in the request.",
+            "type": "object",
+            "properties": {
+                "first": {
+                    "description": "URL of the first page.",
+                    "type": ["string", "null"]
+                },
+                "last": {
+                    "description": "URL of the last page.",
+                    "type": ["string", "null"]
+                },
+                "prev": {
+                    "description": "URL of the previous page; `null` on the first page.",
+                    "type": ["string", "null"]
+                },
+                "next": {
+                    "description": "URL of the next page; `null` on the last page.",
+                    "type": ["string", "null"]
+                }
+            },
+            "additionalProperties": true
+        }
+    }
+}

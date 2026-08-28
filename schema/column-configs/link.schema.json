@@ -1,0 +1,343 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/column-configs/link.schema.json",
+    "title": "Aura `link` column config",
+    "description": "Anchor cell. The text comes from `field` (per row), `value` (fixed) or a `mapping` entry; the URL from `route`.",
+    "$defs": {
+        "linkMappingEntry": {
+            "description": "One entry of the `mapping` lookup, keyed by the field value.",
+            "type": "object",
+            "properties": {
+                "variant": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "$ref": "../common.schema.json#/$defs/color"
+                },
+                "class": {
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                },
+                "title": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "route": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "target": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["_blank", "_self", "_parent", "_top"]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "rel": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            }
+        },
+        "linkConfig": {
+            "description": "Anchor cell. The text comes from `field` (per row), `value` (fixed) or a `mapping` entry; the URL from `route`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Discriminator. Selects the link renderer.",
+                    "type": "string",
+                    "const": "link"
+                },
+                "field": {
+                    "description": "Item field whose value becomes the link text.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "value": {
+                    "description": "Fixed link text, used instead of `field`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "route": {
+                    "description": "URL template; `{key}` placeholders are filled from the row, dots become slashes, and the host app’s `siteName` is prepended.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "target": {
+                    "description": "Anchor `target` attribute.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["_blank", "_self", "_parent", "_top"]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "rel": {
+                    "description": "Anchor `rel` attribute.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "title": {
+                    "description": "Tooltip text, rendered as `title`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "description": "Text colour of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/color"
+                },
+                "variant": {
+                    "description": "Key into the host app’s `variants` config registry, or a Bootstrap colour name.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "align": {
+                    "description": "Alignment of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/align"
+                },
+                "fontSize": {
+                    "description": "Font size of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/fontSize"
+                },
+                "fontWeight": {
+                    "description": "Font weight of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/fontWeight"
+                },
+                "italic": {
+                    "description": "Italic text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lineHeight": {
+                    "description": "Line height of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/lineHeight"
+                },
+                "text": {
+                    "description": "Bootstrap text utility class on the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/textUtility"
+                },
+                "uppercase": {
+                    "description": "Upper-case the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lowercase": {
+                    "description": "Lower-case the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "capitalize": {
+                    "description": "Capitalise the first letter of the rendered text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "monospace": {
+                    "description": "Monospace font.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "slice": {
+                    "description": "Truncate the rendered text to this many characters.",
+                    "$ref": "../common.schema.json#/$defs/slice"
+                },
+                "currency": {
+                    "description": "Format the value as currency, using the host app’s `currencyCode` config.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "date": {
+                    "description": "Format the value as a date.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "phone": {
+                    "description": "Format the value as a phone number.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "unit": {
+                    "description": "Unit appended to the formatted value.",
+                    "$ref": "../common.schema.json#/$defs/contentUnit"
+                },
+                "class": {
+                    "description": "CSS classes on the rendered element.",
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                },
+                "style": {
+                    "description": "Inline CSS on the rendered element.",
+                    "$ref": "../common.schema.json#/$defs/style"
+                },
+                "mapping": {
+                    "description": "Value → link config lookup (variant, colour, route, target …), selected by `field`.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "propertyNames": {
+                                "type": "string"
+                            },
+                            "additionalProperties": {
+                                "$ref": "#/$defs/linkMappingEntry"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "cellRules": {
+                    "description": "Conditional styling for the `<td>` around the link.",
+                    "$ref": "../common.schema.json#/$defs/cellRules"
+                },
+                "key": {
+                    "description": "Item field the `if` conditions read, and the field substituted into `{key}` placeholders in `route`. Defaults to the column key.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "if": {
+                    "description": "Condition branches; the first matching one is merged over this config.",
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "../common.schema.json#/$defs/conditionalRule"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "else": {
+                    "description": "Config merged in when no `if` branch matched.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": ["type"],
+            "patternProperties": {
+                "^data-": {
+                    "$ref": "../common.schema.json#/$defs/dataAttributeValue"
+                }
+            },
+            "additionalProperties": true,
+            "allOf": [
+                {
+                    "title": "One of `field`, `value`, `route` or `mapping` is required — unless `if` or `else` branches are given",
+                    "anyOf": [
+                        {
+                            "required": ["field"]
+                        },
+                        {
+                            "required": ["value"]
+                        },
+                        {
+                            "required": ["route"]
+                        },
+                        {
+                            "required": ["mapping"]
+                        },
+                        {
+                            "required": ["if"]
+                        },
+                        {
+                            "required": ["else"]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "$ref": "#/$defs/linkConfig"
+}

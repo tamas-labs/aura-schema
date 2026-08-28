@@ -1,0 +1,418 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/column-configs/progress.schema.json",
+    "title": "Aura `progress` column config",
+    "description": "Bootstrap progress bar. The value comes from `field` or `value` and is scaled against `min` / `max`; the bar colour comes from `variant`, a value `mapping`, or a `thresholds` range table. With `stacked` the `bars` array renders several segments in one track.",
+    "$defs": {
+        "progressMappingEntry": {
+            "description": "One entry of the `mapping` lookup, keyed by the field value.",
+            "type": "object",
+            "properties": {
+                "variant": {
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "label": {
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "class": {
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                }
+            }
+        },
+        "progressBar": {
+            "description": "One segment of a stacked progress bar.",
+            "type": "object",
+            "properties": {
+                "field": {
+                    "description": "Item field holding this segment’s value.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 250
+                },
+                "variant": {
+                    "description": "Segment colour.",
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "label": {
+                    "description": "Segment label.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": ["field"]
+        },
+        "progressConfig": {
+            "description": "Bootstrap progress bar. The value comes from `field` or `value` and is scaled against `min` / `max`; the bar colour comes from `variant`, a value `mapping`, or a `thresholds` range table. With `stacked` the `bars` array renders several segments in one track.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Discriminator. Selects the progress renderer.",
+                    "type": "string",
+                    "const": "progress"
+                },
+                "field": {
+                    "description": "Item field holding the numeric value.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "value": {
+                    "description": "Fixed numeric value, used instead of `field`.",
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "max": {
+                    "description": "Upper bound of the scale: a number, or the name of the item field holding it. Defaults to 100.",
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "min": {
+                    "description": "Lower bound of the scale. Defaults to 0.",
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "variant": {
+                    "description": "Bar colour.",
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "height": {
+                    "description": "Track height, e.g. `20px`.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "striped": {
+                    "description": "Striped bar.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "animated": {
+                    "description": "Animate the stripes.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "label": {
+                    "description": "Bar label: `true` for the value itself, or fixed text.",
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "labelPosition": {
+                    "description": "Render the label inside the bar or next to it.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "enum": ["inside", "outside"]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "mapping": {
+                    "description": "Value → bar config lookup, keyed by the resolved value.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "propertyNames": {
+                                "type": "string"
+                            },
+                            "additionalProperties": {
+                                "$ref": "#/$defs/progressMappingEntry"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "thresholds": {
+                    "description": "Bootstrap colour → `[min, max]` range. The first range containing the value sets the bar colour.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "propertyNames": {
+                                "type": "string",
+                                "enum": [
+                                    "primary",
+                                    "secondary",
+                                    "success",
+                                    "danger",
+                                    "warning",
+                                    "info",
+                                    "dark",
+                                    "light"
+                                ]
+                            },
+                            "additionalProperties": {
+                                "type": "array",
+                                "prefixItems": [
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "number"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "stacked": {
+                    "description": "Render the `bars` entries as segments of one track.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "bars": {
+                    "description": "Segments of a stacked bar.",
+                    "anyOf": [
+                        {
+                            "minItems": 1,
+                            "maxItems": 50,
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/$defs/progressBar"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "showValue": {
+                    "description": "Show the raw value in the label.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "showPercent": {
+                    "description": "Show the percentage in the label.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "decimals": {
+                    "description": "Decimal places in the label (0–20).",
+                    "anyOf": [
+                        {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 20
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "suffix": {
+                    "description": "Text appended to the label.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "prefix": {
+                    "description": "Text prepended to the label.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "color": {
+                    "description": "Text colour of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/bootstrapColor"
+                },
+                "background": {
+                    "description": "Background colour behind the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/color"
+                },
+                "align": {
+                    "description": "Alignment of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/align"
+                },
+                "fontSize": {
+                    "description": "Font size of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/fontSize"
+                },
+                "fontWeight": {
+                    "description": "Font weight of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/fontWeight"
+                },
+                "italic": {
+                    "description": "Italic text.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "lineHeight": {
+                    "description": "Line height of the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/lineHeight"
+                },
+                "text": {
+                    "description": "Bootstrap text utility class on the rendered content.",
+                    "$ref": "../common.schema.json#/$defs/textUtility"
+                },
+                "monospace": {
+                    "description": "Monospace font.",
+                    "$ref": "../common.schema.json#/$defs/flag"
+                },
+                "class": {
+                    "description": "CSS classes on the rendered element.",
+                    "$ref": "../common.schema.json#/$defs/cssClass"
+                },
+                "style": {
+                    "description": "Inline CSS on the rendered element.",
+                    "$ref": "../common.schema.json#/$defs/style"
+                },
+                "cellRules": {
+                    "description": "Conditional styling for the `<td>` around the bar.",
+                    "$ref": "../common.schema.json#/$defs/cellRules"
+                },
+                "key": {
+                    "description": "Item field the `if` conditions read, and the field substituted into `{key}` placeholders in `route`. Defaults to the column key.",
+                    "anyOf": [
+                        {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 250
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "if": {
+                    "description": "Condition branches; the first matching one is merged over this config.",
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "../common.schema.json#/$defs/conditionalRule"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "else": {
+                    "description": "Config merged in when no `if` branch matched.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": ["type"],
+            "patternProperties": {
+                "^data-": {
+                    "$ref": "../common.schema.json#/$defs/dataAttributeValue"
+                }
+            },
+            "additionalProperties": true,
+            "allOf": [
+                {
+                    "title": "One of `field`, `value` or `stacked` with `bars` is required — unless `if` or `else` branches are given",
+                    "anyOf": [
+                        {
+                            "required": ["field"]
+                        },
+                        {
+                            "required": ["value"]
+                        },
+                        {
+                            "required": ["stacked", "bars"],
+                            "properties": {
+                                "stacked": {
+                                    "const": true
+                                }
+                            }
+                        },
+                        {
+                            "required": ["if"]
+                        },
+                        {
+                            "required": ["else"]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "$ref": "#/$defs/progressConfig"
+}

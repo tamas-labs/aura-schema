@@ -1,0 +1,104 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/body.schema.json",
+    "title": "Aura table body",
+    "description": "The body block is optional. It carries no data — the rows live in `items` — only the per-column rendering configuration.",
+    "$defs": {
+        "body": {
+            "description": "Body block of the response.",
+            "type": "object",
+            "properties": {
+                "columnConfigs": {
+                    "description": "Per-column renderers, keyed by the header cell’s `key`. An entry whose `type` is not one of the supported renderers is reported as a warning and skipped — the rest of the body still renders.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/$defs/columnConfig"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "columnStyles": {
+                    "description": "CSS classes per column, keyed by the header cell’s `key`. Passed through to the cell unvalidated.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "./common.schema.json#/$defs/cssClass"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "settings": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/bodySettings"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "rowRules": {
+                    "description": "Conditional styling for whole rows: the base formatting merged with the `if` / `else` branches, evaluated per row.",
+                    "$ref": "./common.schema.json#/$defs/cellRules"
+                }
+            },
+            "additionalProperties": true
+        },
+        "bodySettings": {
+            "description": "Body-wide settings.",
+            "type": "object",
+            "properties": {
+                "striped": {
+                    "description": "Striped rows (`table-striped`).",
+                    "$ref": "./common.schema.json#/$defs/flag"
+                },
+                "hoverable": {
+                    "description": "Row hover highlight (`table-hover`).",
+                    "$ref": "./common.schema.json#/$defs/flag"
+                }
+            }
+        },
+        "columnConfig": {
+            "description": "One column renderer. `type` selects which renderer — and which config shape — applies.",
+            "oneOf": [
+                {
+                    "$ref": "./column-configs/static.schema.json#/$defs/staticConfig"
+                },
+                {
+                    "$ref": "./column-configs/icon.schema.json#/$defs/iconConfig"
+                },
+                {
+                    "$ref": "./column-configs/link.schema.json#/$defs/linkConfig"
+                },
+                {
+                    "$ref": "./column-configs/modal.schema.json#/$defs/modalConfig"
+                },
+                {
+                    "$ref": "./column-configs/badge.schema.json#/$defs/badgeConfig"
+                },
+                {
+                    "$ref": "./column-configs/progress.schema.json#/$defs/progressConfig"
+                },
+                {
+                    "$ref": "./column-configs/button.schema.json#/$defs/buttonConfig"
+                },
+                {
+                    "$ref": "./column-configs/reference.schema.json#/$defs/referenceConfig"
+                },
+                {
+                    "$ref": "./column-configs/custom.schema.json#/$defs/customConfig"
+                }
+            ]
+        }
+    },
+    "$ref": "#/$defs/body"
+}

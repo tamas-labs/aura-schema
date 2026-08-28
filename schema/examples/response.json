@@ -1,0 +1,180 @@
+{
+    "header": {
+        "rows": [
+            {
+                "cells": [
+                    {
+                        "content": null,
+                        "key": "id",
+                        "field": "id",
+                        "selectable": true,
+                        "width": "40px"
+                    },
+                    { "content": "User", "colspan": 2, "align": "center" },
+                    { "content": "Account", "colspan": 3, "align": "center" }
+                ]
+            },
+            {
+                "cells": [
+                    {
+                        "content": "#",
+                        "key": "id",
+                        "field": "id",
+                        "sortable": true,
+                        "width": "80px",
+                        "align": "end"
+                    },
+                    {
+                        "content": "Name",
+                        "key": "full_name",
+                        "fields": ["first_name", "last_name"],
+                        "sortable": true,
+                        "searchable": true,
+                        "reference": "last_name"
+                    },
+                    {
+                        "content": "Status",
+                        "key": "status",
+                        "field": "status",
+                        "filterable": true,
+                        "elements": { "active": "Active", "suspended": "Suspended" },
+                        "align": "center"
+                    },
+                    {
+                        "content": "Balance",
+                        "key": "balance",
+                        "field": "balance",
+                        "sortable": true,
+                        "between": true,
+                        "currency": true,
+                        "align": "end",
+                        "monospace": true
+                    },
+                    {
+                        "content": "Created",
+                        "key": "created_at",
+                        "field": "created_at",
+                        "sortable": true,
+                        "datetime": true,
+                        "data-testid": "created-column"
+                    }
+                ]
+            }
+        ],
+        "settings": {
+            "sticky": true,
+            "height": "48px",
+            "searchableItems": ["status", "created_at"]
+        }
+    },
+    "body": {
+        "settings": { "striped": true, "hoverable": true },
+        "columnStyles": { "created_at": "text-nowrap" },
+        "rowRules": {
+            "key": "status",
+            "if": [{ "eq": "suspended", "background": "danger-subtle", "opacity": 0.7 }]
+        },
+        "columnConfigs": {
+            "full_name": {
+                "type": "reference",
+                "fields": ["first_name", "last_name"],
+                "separator": " ",
+                "capitalize": true
+            },
+            "status": {
+                "type": "badge",
+                "field": "status",
+                "pill": true,
+                "mapping": {
+                    "active": { "label": "Active", "variant": "success", "icon": "check" },
+                    "suspended": { "label": "Suspended", "variant": "danger", "icon": "ban" }
+                }
+            },
+            "balance": {
+                "type": "static",
+                "key": "balance",
+                "currency": true,
+                "align": "end",
+                "if": [
+                    { "lt": 0, "color": "danger" },
+                    { "gte": 0, "color": "success" }
+                ]
+            },
+            "edit_icon": {
+                "type": "icon",
+                "key": "id",
+                "icon": "edit",
+                "variant": "primary",
+                "title": "Edit user",
+                "alt": "Edit user",
+                "route": "users/{id}/edit"
+            },
+            "destroy_icon": {
+                "type": "modal",
+                "id": "destroyModal",
+                "key": "id",
+                "route": "users/{id}/destroy",
+                "content": {
+                    "type": "icon",
+                    "icon": "trash",
+                    "variant": "danger",
+                    "alt": "Delete user"
+                }
+            }
+        }
+    },
+    "footer": {
+        "rows": [
+            {
+                "cells": [
+                    { "content": "Total", "colspan": 4, "align": "end", "fontWeight": 700 },
+                    {
+                        "content": "12 480.00",
+                        "key": "balance_total",
+                        "field": "balance_total",
+                        "align": "end",
+                        "monospace": true
+                    }
+                ]
+            }
+        ],
+        "settings": { "sticky": true }
+    },
+    "items": [
+        {
+            "id": 1,
+            "first_name": "Ada",
+            "last_name": "Lovelace",
+            "status": "active",
+            "balance": 10240.5,
+            "created_at": "2026-01-14T09:12:00+01:00",
+            "edit_icon": null,
+            "destroy_icon": null
+        },
+        {
+            "id": 2,
+            "first_name": "Alan",
+            "last_name": "Turing",
+            "status": "suspended",
+            "balance": -412.25,
+            "created_at": "2026-02-02T16:45:00+01:00",
+            "edit_icon": null,
+            "destroy_icon": null
+        }
+    ],
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 5,
+        "path": "https://example.test/api/users",
+        "per_page": 10,
+        "to": 10,
+        "total": 48
+    },
+    "links": {
+        "first": "https://example.test/api/users?page=1",
+        "last": "https://example.test/api/users?page=5",
+        "prev": null,
+        "next": "https://example.test/api/users?page=2"
+    }
+}
