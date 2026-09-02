@@ -9,7 +9,7 @@
             "type": "object",
             "properties": {
                 "columnConfigs": {
-                    "description": "Per-column renderers, keyed by the header cell’s `key`. An entry whose `type` is not one of the supported renderers is reported as a warning and skipped — the rest of the body still renders.",
+                    "description": "Per-column renderers, keyed by the cell’s `field` rather than by its `key` — a multi-field cell takes one entry per member field. `cellRules` is the single exception: it is read from the entry named by the column’s `key`. An entry whose `type` is not one of the supported renderers is reported as a warning and skipped — the rest of the body still renders.",
                     "anyOf": [
                         {
                             "type": "object",

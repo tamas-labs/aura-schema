@@ -6,6 +6,35 @@ verziója a csomagolást követi, a szerződésé azt, hogy mit vár a dróton a
 
 ## [Unreleased]
 
+> A `[1.0.0]` szakasz alatti kiadás **még nincs tagelve** — a lenti javítások tehát abba a
+> tagbe kerülnek bele, amikor az megszületik, nem egy rákövetkező kiadásba.
+
+### Javítva
+
+Hét leírás mondta az ellenkezőjét annak, amit az Aura tényleg csinál. **Egyik sem
+validációs változás** — a dokumentumok pontosan ugyanazt fogadják el és utasítják el, mint
+eddig —, de aki a sémát olvasva ír payloadot, eddig működésképtelent írt. Mindegyik javítás
+az olvasó forrásából van igazolva (`evaluate-condition.ts`, `TableBodyRow.tsx`,
+`resolve-value.util.ts`), nem következtetésből.
+
+- **`body.columnConfigs` a cella `field`-je szerint van kulcsolva, nem a `key`-e szerint.**
+  Többmezős cella mezőnként kap egy bejegyzést. Egyetlen kivétel a `cellRules`, amit az
+  oszlop `key`-e nevű bejegyzésből olvas az Aura — a leírás eddig mindkettőre a `key`-t
+  mondta, és egy `key`-re kulcsolt config némán nem renderel.
+- **`conditionalConfig.key`-nek nincs alapértelmezése.** A leírás szerint „defaults to the
+  column key"; valójában string `key` nélkül az Aura **átugorja a feltételeket**, és az
+  alap-configot alkalmazza. Ez fail-open: a feltételes elrejtés csendben nem történik meg.
+- **`true` és `false` egzakt azonosság**, nem truthy/falsy. `fieldValue === true`, tehát egy
+  számként küldött `tinyint` `1` sosem illeszkedik.
+- **`empty` a `0`-t és a `false`-t is üresnek számolja**, az üres tömböt és objektumot
+  viszont **nem** — a leírás pont fordítva sorolta. A `notEmpty` ennek a tagadása.
+- **`null` pontosan `null`-t jelent, `notNull` pedig minden mást.** A sorból hiányzó mező
+  `undefined`-ra oldódik: a `null`-ra **nem** illeszkedik, a `notNull`-ra **igen**.
+- **`eq` / `ne` / `in` / `notIn` szigorúan hasonlít** (`===`), koerció nélkül: az `1` és az
+  `"1"` sosem egyezik. Egy stringként sorosított decimal ezért sosem illeszkedik számra.
+- **`gt` / `gte` / `lt` / `lte` / `between` előbb dátumot próbál, utána mindkét oldalon
+  számot vár.** Numerikus string (`"12.50"`) esetén az összehasonlítás **némán hamis**.
+
 ## [1.0.0] – 2026-08-27
 
 Az első kiadás. A szerződés verziója: **1.0** — tartalmilag pontosan az, ami eddig az

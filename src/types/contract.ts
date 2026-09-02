@@ -2089,7 +2089,7 @@ export interface HeaderSettings {
  */
 export interface Body {
     /**
-     * Per-column renderers, keyed by the header cell’s `key`. An entry whose `type` is not one of the supported renderers is reported as a warning and skipped — the rest of the body still renders.
+     * Per-column renderers, keyed by the cell’s `field` rather than by its `key` — a multi-field cell takes one entry per member field. `cellRules` is the single exception: it is read from the entry named by the column’s `key`. An entry whose `type` is not one of the supported renderers is reported as a warning and skipped — the rest of the body still renders.
      */
     columnConfigs?: {
         [k: string]: ColumnConfig;
@@ -2166,7 +2166,7 @@ export interface CellFormattingOptions {
  */
 export interface ConditionalConfig {
     /**
-     * Item field the conditions are evaluated against. Defaults to the column key when omitted.
+     * Item field the conditions are evaluated against. There is no default — without a string `key` the conditions are skipped and the base configuration is applied as it stands.
      */
     key?: string | null;
     /**
@@ -2186,13 +2186,13 @@ export interface ConditionalConfig {
  */
 export interface ConditionalRule {
     /**
-     * Equal to the given value.
+     * Strictly equal to the given value (`===`) — no coercion, so `1` and `"1"` never match. A decimal column serialised as a string is compared as a string.
      */
     eq?: {
         [k: string]: any;
     };
     /**
-     * Not equal to the given value.
+     * Strictly not equal to the given value (`!==`), with the same strictness as `eq`.
      */
     ne?: {
         [k: string]: any;
@@ -2204,7 +2204,7 @@ export interface ConditionalRule {
         [k: string]: any;
     };
     /**
-     * Greater than the given value.
+     * Greater than the given value. Both sides are read as dates first; failing that both must be numbers — a numeric string such as `"12.50"` makes the comparison silently false.
      */
     gt?: {
         [k: string]: any;
@@ -2216,7 +2216,7 @@ export interface ConditionalRule {
         [k: string]: any;
     };
     /**
-     * Greater than or equal to the given value.
+     * Greater than or equal to the given value. Dates first, otherwise both sides must be numbers — see `gt`.
      */
     gte?: {
         [k: string]: any;
@@ -2228,7 +2228,7 @@ export interface ConditionalRule {
         [k: string]: any;
     };
     /**
-     * Less than the given value.
+     * Less than the given value. Dates first, otherwise both sides must be numbers — see `gt`.
      */
     lt?: {
         [k: string]: any;
@@ -2240,7 +2240,7 @@ export interface ConditionalRule {
         [k: string]: any;
     };
     /**
-     * Less than or equal to the given value.
+     * Less than or equal to the given value. Dates first, otherwise both sides must be numbers — see `gt`.
      */
     lte?: {
         [k: string]: any;
@@ -2252,18 +2252,18 @@ export interface ConditionalRule {
         [k: string]: any;
     };
     /**
-     * Inside the inclusive `[min, max]` range — a two-element array.
+     * Inside the inclusive `[min, max]` range — a two-element array. All three values are read as dates first; failing that all three must be numbers, and anything else is silently false.
      *
      * @minItems 2
      * @maxItems 2
      */
     between?: [any, any];
     /**
-     * Contained by the given array.
+     * Contained by the given array, compared strictly — `1` does not match `"1"`.
      */
     in?: any[];
     /**
-     * Not contained by the given array.
+     * Not contained by the given array, compared strictly — see `in`.
      */
     notIn?: any[];
     /**
@@ -2291,37 +2291,37 @@ export interface ConditionalRule {
         [k: string]: any;
     };
     /**
-     * Value is `null` / `undefined` — pass `true`.
+     * Value is exactly `null` — pass `true`. A field missing from the row resolves to `undefined` and does not match.
      */
     null?: {
         [k: string]: any;
     };
     /**
-     * Value is neither `null` nor `undefined` — pass `true`.
+     * Value is anything other than `null` — pass `true`. A field missing from the row resolves to `undefined`, which does match.
      */
     notNull?: {
         [k: string]: any;
     };
     /**
-     * Value is empty (`null`, empty string, `[]`, `{}`) — pass `true`.
+     * Value is `null`, `undefined`, an empty string, `0` or `false` — pass `true`. An empty array or object is not empty.
      */
     empty?: {
         [k: string]: any;
     };
     /**
-     * Value is not empty — pass `true`.
+     * Value is none of `null`, `undefined`, an empty string, `0` or `false` — pass `true`. An empty array or object counts as not empty.
      */
     notEmpty?: {
         [k: string]: any;
     };
     /**
-     * Value is truthy — pass `true`.
+     * Value is exactly `true` — pass `true`. An identity check, not truthiness: `1` and `"yes"` do not match, so a `tinyint` sent as a number never does.
      */
     true?: {
         [k: string]: any;
     };
     /**
-     * Value is falsy — pass `true`.
+     * Value is exactly `false` — pass `true`. Not falsiness: `0`, an empty string and `null` do not match.
      */
     false?: {
         [k: string]: any;
