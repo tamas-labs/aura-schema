@@ -22,6 +22,7 @@ const outputPath = join(repoRoot, 'src', 'schemas.generated.ts');
  * deliberate, reviewable addition to the public surface.
  */
 const EXPORTS = [
+    ['auraErrorReportSchema', 'schema/aura-error-report.schema.json'],
     ['auraRequestSchema', 'schema/aura-request.schema.json'],
     ['auraResponseSchema', 'schema/aura-response.schema.json'],
     ['commonSchema', 'schema/common.schema.json'],

@@ -1,0 +1,62 @@
+{
+    "errors": [
+        {
+            "severity": "warning",
+            "level": "warning",
+            "timestamp": "2026-09-02T12:00:00.000Z",
+            "component": "HeaderValidator",
+            "action": "validate",
+            "type": "validation",
+            "message": "Invalid header structure in API response",
+            "key": "header",
+            "details": "rows.0.cells.1.field: Required",
+            "metadata": {
+                "receivedValue": {
+                    "rows": [
+                        {
+                            "cells": [
+                                { "content": "#", "key": "id", "field": "id" },
+                                { "content": "Name", "key": "name" }
+                            ]
+                        }
+                    ]
+                },
+                "receivedType": "object"
+            }
+        },
+        {
+            "severity": "error",
+            "level": "error",
+            "timestamp": "2026-09-02T12:00:03.100Z",
+            "component": "ApiResourcesStore",
+            "action": "fetchData",
+            "type": "api",
+            "message": "The server ran into an error (500). Please try again later.",
+            "key": "ApiResourcesStore.fetchData.api",
+            "details": "Request failed with status code 500",
+            "count": 3,
+            "lastTimestamp": "2026-09-02T12:01:03.400Z",
+            "metadata": {
+                "kind": "server",
+                "status": 500
+            }
+        },
+        {
+            "severity": "info",
+            "level": "info",
+            "timestamp": "2026-09-02T12:02:11.900Z",
+            "component": "ErrorReporter",
+            "action": "report",
+            "type": "network",
+            "message": "Error reporting endpoint is unreachable",
+            "key": "errorReporting.failed",
+            "details": "HTTP error! status: 503",
+            "count": 2,
+            "lastTimestamp": "2026-09-02T12:02:41.900Z",
+            "metadata": {
+                "pending": 14,
+                "consecutiveFailures": 2
+            }
+        }
+    ]
+}

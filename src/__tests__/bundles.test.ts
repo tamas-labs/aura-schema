@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import Ajv2020 from 'ajv/dist/2020.js';
 
 import { auraContractManifest } from '../contract.js';
-import { validateAuraRequest, validateAuraResponse } from '../validate.js';
+import { validateAuraErrorReport, validateAuraRequest, validateAuraResponse } from '../validate.js';
 
 const repoRoot = join(import.meta.dirname, '..', '..');
 
@@ -24,10 +24,10 @@ function readJson(relativePath: string): unknown {
  * Nothing else is registered on purpose — if a bundle still needed a sibling
  * document to compile, it would not be a bundle.
  *
- * @param name - `request` or `response`.
+ * @param name - `request`, `response` or `error-report`.
  * @returns The compiled validate function.
  */
-function compileBundle(name: 'request' | 'response') {
+function compileBundle(name: 'request' | 'response' | 'error-report') {
     const bundle = readJson(auraContractManifest.bundles[name] as string);
     const ajv = new Ajv2020({ strict: false, allErrors: true });
 
@@ -71,10 +71,54 @@ const REQUEST_CASES: Array<[string, unknown, boolean]> = [
     ['an unknown sort direction', { page: 1, sortable: [{ field: 'id', direction: 'up' }] }, false],
 ];
 
+const ERROR_REPORT_CASES: Array<[string, unknown, boolean]> = [
+    [
+        'the shipped example',
+        readJson(auraContractManifest.examples['error-report'] as string),
+        true,
+    ],
+    [
+        'a single minimal entry',
+        {
+            errors: [
+                {
+                    severity: 'warning',
+                    level: 'warning',
+                    timestamp: '2026-09-02T12:00:00.000Z',
+                    component: 'BooleanValidator',
+                    action: 'validate',
+                    type: 'validation',
+                    message: 'Invalid value',
+                },
+            ],
+        },
+        true,
+    ],
+    ['an empty batch', { errors: [] }, false],
+    [
+        'an entry with an unknown severity',
+        {
+            errors: [
+                {
+                    severity: 'fatal',
+                    level: 'fatal',
+                    timestamp: '2026-09-02T12:00:00.000Z',
+                    component: 'BooleanValidator',
+                    action: 'validate',
+                    type: 'validation',
+                    message: 'Invalid value',
+                },
+            ],
+        },
+        false,
+    ],
+];
+
 describe('bundled schemas', () => {
     it('compile with nothing else registered', () => {
         expect(compileBundle('response')).toBeTypeOf('function');
         expect(compileBundle('request')).toBeTypeOf('function');
+        expect(compileBundle('error-report')).toBeTypeOf('function');
     });
 
     it('carry no cross-file $ref', () => {
@@ -103,6 +147,16 @@ describe('bundled schemas', () => {
 
             expect(bundled).toBe(expected);
             expect(validateAuraRequest(payload).valid).toBe(expected);
+        }
+    );
+
+    it.each(ERROR_REPORT_CASES)(
+        'agrees with the split error-report schema on %s',
+        (_label, payload, expected) => {
+            const bundled = compileBundle('error-report')(payload);
+
+            expect(bundled).toBe(expected);
+            expect(validateAuraErrorReport(payload).valid).toBe(expected);
         }
     );
 });

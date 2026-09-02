@@ -29,20 +29,21 @@ to resolve inside the published set.
 ## Layout
 
 ```
-schema/                        the contract — the source of truth
-├── aura-request.schema.json   what Aura sends on every fetch
-├── aura-response.schema.json  what the endpoint must return
-├── header.schema.json         column definitions
-├── body.schema.json           per-column rendering configuration
-├── footer.schema.json         footer rows
-├── pagination.schema.json     meta / links
-├── common.schema.json         shared field-level building blocks
-├── column-configs/            one file per column type (badge, button, link, …)
-├── bundled/                   generated: each entrypoint flattened into one file
-└── examples/                  a complete request and response
-contract.json                  version, dialect, base URI, file list
-src/                           the npm surface (TypeScript)
-php/src/AuraSchema.php         the Composer surface (PHP, zero dependencies)
+schema/                            the contract — the source of truth
+├── aura-request.schema.json       what Aura sends on every fetch
+├── aura-response.schema.json      what the endpoint must return
+├── aura-error-report.schema.json  what Aura POSTs to the error-reporting endpoint
+├── header.schema.json             column definitions
+├── body.schema.json               per-column rendering configuration
+├── footer.schema.json             footer rows
+├── pagination.schema.json         meta / links
+├── common.schema.json             shared field-level building blocks
+├── column-configs/                one file per column type (badge, button, link, …)
+├── bundled/                       generated: each entrypoint flattened into one file
+└── examples/                      a complete request, response and error report
+contract.json                      version, dialect, base URI, file list
+src/                               the npm surface (TypeScript)
+php/src/AuraSchema.php             the Composer surface (PHP, zero dependencies)
 ```
 
 `schema/*.json` is what you edit. Everything under `schema/bundled/`, plus
@@ -91,7 +92,8 @@ if (!valid) {
 }
 ```
 
-`createAuraValidator(options)` gives you the pre-loaded Ajv instance if you want to compile
+`validateAuraRequest` and `validateAuraErrorReport` are the same for the other two entrypoints,
+and `createAuraValidator(options)` gives you the pre-loaded Ajv instance if you want to compile
 something else against the same set.
 
 ## Using it from PHP
@@ -109,6 +111,7 @@ use TamasLabs\AuraSchema\AuraSchema;
 AuraSchema::VERSION;             // '1.0'
 AuraSchema::directory();         // …/vendor/tamas-labs/aura-schema/schema
 AuraSchema::responsePath();      // …/schema/aura-response.schema.json
+AuraSchema::errorReportPath();   // …/schema/aura-error-report.schema.json
 AuraSchema::path('column-configs/badge');
 AuraSchema::get('header');       // decoded, as an array
 AuraSchema::all();               // every document, keyed by $id
@@ -127,8 +130,9 @@ $result = $validator->validate($payload, AuraSchema::BASE_URI.'aura-response.sch
 
 ## Bundles
 
-`schema/bundled/aura-response.bundle.json` and `aura-request.bundle.json` are the same contract
-flattened into a single self-contained document: every reachable `$defs` entry merged under the
+`schema/bundled/aura-response.bundle.json`, `aura-request.bundle.json` and
+`aura-error-report.bundle.json` are the same contract flattened into a single self-contained
+document: every reachable `$defs` entry merged under the
 entrypoint, every `$ref` rewritten to a local pointer. Use them with tools that cannot follow
 cross-file references — code generators, online validators, OpenAPI toolchains.
 

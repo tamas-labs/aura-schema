@@ -2621,3 +2621,93 @@ export interface AuraRequest {
      */
     selected?: (string | number)[];
 }
+
+// ── schema/bundled/aura-error-report.bundle.json ──
+
+/**
+ * ECS severity level.
+ */
+export type ErrorSeverity = 'critical' | 'error' | 'warning' | 'info' | 'debug';
+/**
+ * Error category. `validation` is a schema violation in the config or in the API response, `api` a failed request, `client` a wiring mistake in the host application.
+ */
+export type ErrorType =
+    | 'validation'
+    | 'network'
+    | 'authentication'
+    | 'authorization'
+    | 'not_found'
+    | 'server'
+    | 'client'
+    | 'api'
+    | 'unknown';
+
+/**
+ * What Aura POSTs to `errorReportingEndpoint` while `errorReporting` is on: one batch of ECS-shaped entries, sent with `Content-Type: application/json` and — only when `errorReportingApiKey` is set — an `Authorization: Bearer …` header. Nothing else is sent: no `Accept`, no `X-Requested-With`, no CSRF token, and no wrapper field beside `errors`. The client is native `fetch`, so a same-origin request carries the session cookie and a cross-origin one does not. A batch holds between 1 and 100 entries — the flush sends the whole queue, not `batchSize` of it — and every non-2xx response is retried four times and then re-queued behind an exponential backoff, so an endpoint that rejects a malformed batch will receive it forever.
+ */
+export interface AuraErrorReport {
+    /**
+     * The flushed queue, oldest first. Never empty — a flush with nothing queued does not happen — and never longer than the client's `maxQueueSize` of 100.
+     *
+     * @minItems 1
+     */
+    errors: [ErrorEntry, ...ErrorEntry[]];
+}
+/**
+ * One reported error. `additionalProperties` is open on purpose: a future Aura release may add fields, and a receiver that rejects the batch over one of them would reject it forever.
+ */
+export interface ErrorEntry {
+    severity: ErrorSeverity;
+    /**
+     * Copy of `severity`, kept for ECS compatibility. Aura marks it `@deprecated` and always fills it in; a receiver should read `severity`.
+     */
+    level: 'critical' | 'error' | 'warning' | 'info' | 'debug';
+    /**
+     * ISO 8601 timestamp of the **first** occurrence. Once the error repeats, `lastTimestamp` marks the most recent one.
+     */
+    timestamp: string;
+    /**
+     * Where the error came from — a validator name (`HeaderValidator`, `BodyValidator`, …), a store (`ApiResourcesStore`, `CoreStore`), or a component (`DestroyModal`).
+     */
+    component: string;
+    /**
+     * The operation that failed — `validate`, `fetchData`, `resolve`, `report`, …
+     */
+    action: string;
+    type: ErrorType;
+    /**
+     * Text written for the end user. It is translated through `labels`, so it is **not** a stable identifier — group on `key` instead.
+     */
+    message: string;
+    /**
+     * Stable identifier of the error. Validators put the offending field name here; otherwise the store generates `component.action.type`. This is the field to group and deduplicate on.
+     */
+    key?: string;
+    /**
+     * Raw developer-facing text — a Zod issue path, an axios message. May contain a URL with its query string.
+     */
+    details?: string;
+    /**
+     * Free-form context. A schema violation carries `receivedValue` (the rejected value **verbatim**, which for `HeaderValidator` / `BodyValidator` is the whole response section) and `receivedType`; a failed request carries `kind`, `status` and `code`. Unbounded on the client — a receiver must cap it itself.
+     */
+    metadata?: {
+        [k: string]: any;
+    };
+    /**
+     * Occurrences merged into this entry. **Absent while the error happened once**, so the count is `count ?? 1`.
+     */
+    count?: number;
+    /**
+     * ISO 8601 timestamp of the most recent occurrence. Absent until the error repeats.
+     */
+    lastTimestamp?: string;
+    /**
+     * Caller-supplied identifier. Aura never fills this in; it can only come from the host application's own `addError` call.
+     */
+    id?: string;
+    /**
+     * Stack trace. Aura never fills this in either.
+     */
+    stack?: string;
+    [k: string]: any;
+}

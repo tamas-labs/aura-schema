@@ -4,13 +4,16 @@
     "baseUri": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/",
     "entrypoints": {
         "request": "schema/aura-request.schema.json",
-        "response": "schema/aura-response.schema.json"
+        "response": "schema/aura-response.schema.json",
+        "error-report": "schema/aura-error-report.schema.json"
     },
     "bundles": {
         "request": "schema/bundled/aura-request.bundle.json",
-        "response": "schema/bundled/aura-response.bundle.json"
+        "response": "schema/bundled/aura-response.bundle.json",
+        "error-report": "schema/bundled/aura-error-report.bundle.json"
     },
     "schemas": [
+        "schema/aura-error-report.schema.json",
         "schema/aura-request.schema.json",
         "schema/aura-response.schema.json",
         "schema/body.schema.json",
@@ -30,6 +33,7 @@
     ],
     "examples": {
         "request": "schema/examples/request.json",
-        "response": "schema/examples/response.json"
+        "response": "schema/examples/response.json",
+        "error-report": "schema/examples/error-report.json"
     }
 }

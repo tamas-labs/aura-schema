@@ -1,0 +1,125 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/bundled/aura-error-report.bundle.json",
+    "title": "Aura error report",
+    "description": "What Aura POSTs to `errorReportingEndpoint` while `errorReporting` is on: one batch of ECS-shaped entries, sent with `Content-Type: application/json` and — only when `errorReportingApiKey` is set — an `Authorization: Bearer …` header. Nothing else is sent: no `Accept`, no `X-Requested-With`, no CSRF token, and no wrapper field beside `errors`. The client is native `fetch`, so a same-origin request carries the session cookie and a cross-origin one does not. A batch holds between 1 and 100 entries — the flush sends the whole queue, not `batchSize` of it — and every non-2xx response is retried four times and then re-queued behind an exponential backoff, so an endpoint that rejects a malformed batch will receive it forever.",
+    "type": "object",
+    "properties": {
+        "errors": {
+            "description": "The flushed queue, oldest first. Never empty — a flush with nothing queued does not happen — and never longer than the client's `maxQueueSize` of 100.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "$ref": "#/$defs/errorEntry"
+            }
+        }
+    },
+    "required": [
+        "errors"
+    ],
+    "additionalProperties": false,
+    "$defs": {
+        "errorEntry": {
+            "description": "One reported error. `additionalProperties` is open on purpose: a future Aura release may add fields, and a receiver that rejects the batch over one of them would reject it forever.",
+            "type": "object",
+            "properties": {
+                "severity": {
+                    "$ref": "#/$defs/errorSeverity"
+                },
+                "level": {
+                    "$ref": "#/$defs/errorLevel"
+                },
+                "timestamp": {
+                    "description": "ISO 8601 timestamp of the **first** occurrence. Once the error repeats, `lastTimestamp` marks the most recent one.",
+                    "type": "string"
+                },
+                "component": {
+                    "description": "Where the error came from — a validator name (`HeaderValidator`, `BodyValidator`, …), a store (`ApiResourcesStore`, `CoreStore`), or a component (`DestroyModal`).",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "action": {
+                    "description": "The operation that failed — `validate`, `fetchData`, `resolve`, `report`, …",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "type": {
+                    "$ref": "#/$defs/errorType"
+                },
+                "message": {
+                    "description": "Text written for the end user. It is translated through `labels`, so it is **not** a stable identifier — group on `key` instead.",
+                    "type": "string"
+                },
+                "key": {
+                    "description": "Stable identifier of the error. Validators put the offending field name here; otherwise the store generates `component.action.type`. This is the field to group and deduplicate on.",
+                    "type": "string"
+                },
+                "details": {
+                    "description": "Raw developer-facing text — a Zod issue path, an axios message. May contain a URL with its query string.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Free-form context. A schema violation carries `receivedValue` (the rejected value **verbatim**, which for `HeaderValidator` / `BodyValidator` is the whole response section) and `receivedType`; a failed request carries `kind`, `status` and `code`. Unbounded on the client — a receiver must cap it itself.",
+                    "type": "object"
+                },
+                "count": {
+                    "description": "Occurrences merged into this entry. **Absent while the error happened once**, so the count is `count ?? 1`.",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "lastTimestamp": {
+                    "description": "ISO 8601 timestamp of the most recent occurrence. Absent until the error repeats.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Caller-supplied identifier. Aura never fills this in; it can only come from the host application's own `addError` call.",
+                    "type": "string"
+                },
+                "stack": {
+                    "description": "Stack trace. Aura never fills this in either.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "severity",
+                "level",
+                "timestamp",
+                "component",
+                "action",
+                "type",
+                "message"
+            ],
+            "additionalProperties": true
+        },
+        "errorLevel": {
+            "description": "Copy of `severity`, kept for ECS compatibility. Aura marks it `@deprecated` and always fills it in; a receiver should read `severity`.",
+            "$ref": "#/$defs/errorSeverity"
+        },
+        "errorSeverity": {
+            "description": "ECS severity level.",
+            "type": "string",
+            "enum": [
+                "critical",
+                "error",
+                "warning",
+                "info",
+                "debug"
+            ]
+        },
+        "errorType": {
+            "description": "Error category. `validation` is a schema violation in the config or in the API response, `api` a failed request, `client` a wiring mistake in the host application.",
+            "type": "string",
+            "enum": [
+                "validation",
+                "network",
+                "authentication",
+                "authorization",
+                "not_found",
+                "server",
+                "client",
+                "api",
+                "unknown"
+            ]
+        }
+    }
+}

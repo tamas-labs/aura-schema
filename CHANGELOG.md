@@ -1,83 +1,108 @@
-# Változásnapló
+# Changelog
 
-A formátum a [Keep a Changelog](https://keepachangelog.com/hu/1.1.0/) ajánlását követi.
-A **szerződés** verziója (`contract.json` → `version`) külön él a csomagverziótól: a csomag
-verziója a csomagolást követi, a szerződésé azt, hogy mit vár a dróton az Aura.
+The format follows the recommendations of [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+The **contract** version (`contract.json` → `version`) is independent of the package version:
+the package version tracks packaging, while the contract version tracks what Aura expects on
+the wire.
 
 ## [Unreleased]
 
-> A `[1.0.0]` szakasz alatti kiadás **még nincs tagelve** — a lenti javítások tehát abba a
-> tagbe kerülnek bele, amikor az megszületik, nem egy rákövetkező kiadásba.
+### Added
 
-### Javítva
+**New standalone document: `schema/aura-error-report.schema.json`** — the batch that Aura
+POSTs to `errorReportingEndpoint` when `errorReporting: true`. **The contract version remains
+`1.0`**: this does not modify the request/response, but adds a third entry point — the package
+version gets a minor bump, while `contract.json` → `version` does not.
 
-Hét leírás mondta az ellenkezőjét annak, amit az Aura tényleg csinál. **Egyik sem
-validációs változás** — a dokumentumok pontosan ugyanazt fogadják el és utasítják el, mint
-eddig —, de aki a sémát olvasva ír payloadot, eddig működésképtelent írt. Mindegyik javítás
-az olvasó forrásából van igazolva (`evaluate-condition.ts`, `TableBodyRow.tsx`,
-`resolve-value.util.ts`), nem következtetésből.
+- The document describes the `{ "errors": [ … ] }` batch. Required fields per entry are:
+  `severity`, `level`, `timestamp`, `component`, `action`, `type`, `message`; optional fields are
+  `key`, `details`, `metadata`, `count`, `lastTimestamp`, `id`, `stack`.
+- **Entries have `additionalProperties: true`.** Aura's payload may grow (`storeId`, `version`,
+  and `batchId` are candidates); a receiver that rejects the batch for this reason will reject it
+  forever — the client retries every non-2xx response four times, then retries with exponential
+  backoff.
+- **`count` and `lastTimestamp` are optional**: they are absent until an error has occurred more
+  than once, so the count is `count ?? 1`.
+- The batch has `minItems: 1` — the client does not flush an empty queue.
+- Also included are `schema/examples/error-report.json`, the
+  `schema/bundled/aura-error-report.bundle.json` bundle, the generated `AuraErrorReport` type,
+  the `validateAuraErrorReport()` function on the `/validate` subpath, and
+  `AuraSchema::errorReportPath()` on the PHP side.
 
-- **`body.columnConfigs` a cella `field`-je szerint van kulcsolva, nem a `key`-e szerint.**
-  Többmezős cella mezőnként kap egy bejegyzést. Egyetlen kivétel a `cellRules`, amit az
-  oszlop `key`-e nevű bejegyzésből olvas az Aura — a leírás eddig mindkettőre a `key`-t
-  mondta, és egy `key`-re kulcsolt config némán nem renderel.
-- **`conditionalConfig.key`-nek nincs alapértelmezése.** A leírás szerint „defaults to the
-  column key"; valójában string `key` nélkül az Aura **átugorja a feltételeket**, és az
-  alap-configot alkalmazza. Ez fail-open: a feltételes elrejtés csendben nem történik meg.
-- **`true` és `false` egzakt azonosság**, nem truthy/falsy. `fieldValue === true`, tehát egy
-  számként küldött `tinyint` `1` sosem illeszkedik.
-- **`empty` a `0`-t és a `false`-t is üresnek számolja**, az üres tömböt és objektumot
-  viszont **nem** — a leírás pont fordítva sorolta. A `notEmpty` ennek a tagadása.
-- **`null` pontosan `null`-t jelent, `notNull` pedig minden mást.** A sorból hiányzó mező
-  `undefined`-ra oldódik: a `null`-ra **nem** illeszkedik, a `notNull`-ra **igen**.
-- **`eq` / `ne` / `in` / `notIn` szigorúan hasonlít** (`===`), koerció nélkül: az `1` és az
-  `"1"` sosem egyezik. Egy stringként sorosított decimal ezért sosem illeszkedik számra.
-- **`gt` / `gte` / `lt` / `lte` / `between` előbb dátumot próbál, utána mindkét oldalon
-  számot vár.** Numerikus string (`"12.50"`) esetén az összehasonlítás **némán hamis**.
+### Fixed
+
+> The release under the `[1.0.0]` section **has not been tagged yet** — the fixes below will
+> therefore be included in that tag when it is created, not in a subsequent release.
+
+Seven descriptions said the opposite of what Aura actually does. **None of these are
+validation changes** — the documents accept and reject exactly the same payloads as before —
+but anyone writing a payload based on the schema description would previously have written a
+non-working payload. Each fix is verified against the source read by the client
+(`evaluate-condition.ts`, `TableBodyRow.tsx`, `resolve-value.util.ts`), not inferred.
+
+- **`body.columnConfigs` is keyed by the cell's `field`, not its `key`.** A multi-field cell
+  receives one entry per field. The sole exception is `cellRules`, which Aura reads from the
+  entry named after the column's `key` — the description previously said `key` for both, and a
+  config keyed by `key` silently fails to render.
+- **`conditionalConfig.key` has no default.** The description said “defaults to the column key”;
+  in reality, without a string `key`, Aura **skips the conditions** and applies the base config.
+  This is fail-open: conditional hiding simply does not happen.
+- **`true` and `false` use exact equality**, not truthiness/falsiness. `fieldValue === true`, so
+  a `tinyint` `1` sent as a number never matches.
+- **`empty` considers both `0` and `false` empty**, but **not** an empty array or object — the
+  description listed this exactly backwards. `notEmpty` is its negation.
+- **`null` means exactly `null`, while `notNull` means everything else.** A field missing from
+  the row resolves to `undefined`: it does **not** match `null`, but it **does** match `notNull`.
+- **`eq` / `ne` / `in` / `notIn` use strict comparison** (`===`), without coercion: `1` and
+  `"1"` never match. A decimal serialized as a string therefore never matches a number.
+- **`gt` / `gte` / `lt` / `lte` / `between` try a date first, then require numbers on both sides.**
+  With a numeric string (`"12.50"`), the comparison is **silently false**.
 
 ## [1.0.0] – 2026-08-27
 
-Az első kiadás. A szerződés verziója: **1.0** — tartalmilag pontosan az, ami eddig az
-`aura` repó `docs/schema/` könyvtárában élt, egyetlen változtatással: a `$id`-k az új,
-kanonikus helyre mutatnak.
+The first release. The contract version is **1.0** — content-wise, it is exactly what previously
+lived in the `aura` repository's `docs/schema/` directory, with one change: the `$id`s point to
+the new canonical location.
 
-### Hozzáadva
+### Added
 
-- **A szerződés kanonikus otthona.** 16 JSON Schema dokumentum (draft 2020-12) a `schema/`
-  alatt, plusz a `request` / `response` példa. Eddig az `aura` repóban éltek, kézzel másolva
-  a `laravel-aura`-ba — két másolat, két igazság, és egyiket sem validálta semmi.
-- **`contract.json`** — a szerződés manifesztje: verzió, dialektus, `$id` alap-URI, a
-  belépési pontok, a bundle-ök, a példák és a teljes fájllista. Ezt olvassa mindkét
-  csomagolás, így a verzió nem tud elcsúszni a két nyelv között.
-- **npm-csomag** (`@tamas-labs/aura-schema`): a fő belépési pont futásidejű függőség nélkül
-  adja a dokumentumokat (`allSchemas`, `schemasById`, dokumentumonkénti export) és a
-  metaadatokat (`AURA_CONTRACT_VERSION`, `AURA_SCHEMA_DIALECT`, `AURA_SCHEMA_BASE_URI`).
-- **Generált TypeScript payload-típusok** (`AuraResponse`, `AuraRequest` és a belőlük
-  felépülő ~65 típus), közvetlenül a schemákból. Nem kézzel írt párhuzamos igazság.
-- **`@tamas-labs/aura-schema/validate`** alútvonal: `validateAuraResponse`,
-  `validateAuraRequest`, `createAuraValidator`. Az `ajv` opcionális peer, hogy a fő belépési
-  pont függőségmentes maradjon.
-- **Composer-csomag** (`tamas-labs/aura-schema`): `TamasLabs\AuraSchema\AuraSchema` — fájl-
-  lokátor `VERSION`, `BASE_URI`, `directory()`, `path()`, `get()`, `all()`, `bundlePath()`,
-  `examplePath()` metódusokkal. Nulla Composer-függőség: a validátort a fogyasztó hozza.
-- **Bundle-ök** (`schema/bundled/*.bundle.json`): belépési pontonként egyetlen,
-  önmagában megálló dokumentum — az elérhető `$defs`-ek összefésülve, a `$ref`-ek lokális
-  mutatóra írva. Azoknak az eszközöknek, amelyek nem tudnak fájlok között hivatkozni.
-- **Teszthálózat (29 teszt).** Ezek eddig sehol nem futottak:
-    - a szállított példák validálnak a saját schemájukra;
-    - minden `$id` egyezik a fájl saját útvonalával;
-    - minden fájlközi `$ref` feloldható a publikált halmazon belül;
-    - a manifeszt fájllistája pontosan a lemezen lévő fájlokat sorolja;
-    - a PHP `VERSION` és a `contract.json` verziója megegyezik;
-    - a bundle-ök pontosan ugyanazt fogadják el és utasítják el, mint az osztott schemák;
-    - a generált típusok által leírt payload a validátoron is átmegy.
-- **Drift-kapuk.** A `schema/*.json` a forrás; a `bundled/`, a `src/schemas.generated.ts` és
-  a `src/types/contract.ts` generált. A `npm run quality` (és így a CI) elbukik, ha a
-  generált állomány elavult.
-- **CI**: JavaScript-oldal Node 20/22-n, PHP-oldal 8.3/8.4-en.
+- **The canonical home of the contract.** 16 JSON Schema documents (draft 2020-12) under
+  `schema/`, plus the `request` / `response` examples. They previously lived in the `aura`
+  repository and were copied manually into `laravel-aura` — two copies, two sources of truth,
+  and neither was validated.
+- **`contract.json`** — the contract manifest: version, dialect, `$id` base URI, entry points,
+  bundles, examples, and the complete file list. Both package formats read it, so the version
+  cannot drift between the two languages.
+- **npm package** (`@tamas-labs/aura-schema`): the main entry point provides the documents
+  (`allSchemas`, `schemasById`, per-document exports) and metadata
+  (`AURA_CONTRACT_VERSION`, `AURA_SCHEMA_DIALECT`, `AURA_SCHEMA_BASE_URI`) without runtime
+  dependencies.
+- **Generated TypeScript payload types** (`AuraResponse`, `AuraRequest`, and the ~65 types built
+  from them), generated directly from the schemas. No hand-written parallel source of truth.
+- **`@tamas-labs/aura-schema/validate`** subpath: `validateAuraResponse`, `validateAuraRequest`,
+  and `createAuraValidator`. `ajv` is an optional peer so the main entry point remains
+  dependency-free.
+- **Composer package** (`tamas-labs/aura-schema`): `TamasLabs\AuraSchema\AuraSchema` — a file
+  locator with `VERSION`, `BASE_URI`, `directory()`, `path()`, `get()`, `all()`, `bundlePath()`,
+  and `examplePath()` methods. Zero Composer dependencies: the consumer supplies the validator.
+- **Bundles** (`schema/bundled/*.bundle.json`): one self-contained document per entry point —
+  reachable `$defs` merged together and `$ref`s rewritten to local pointers. For tools that
+  cannot resolve references across files.
+- **Test suite (29 tests).** These had not run anywhere before:
+    - shipped examples validate against their own schemas;
+    - every `$id` matches the file's own path;
+    - every cross-file `$ref` resolves within the published set;
+    - the manifest's file list exactly matches the files on disk;
+    - the PHP `VERSION` matches the `contract.json` version;
+    - bundles accept and reject exactly the same payloads as the split schemas;
+    - payloads described by the generated types also pass the validator.
+- **Drift gates.** `schema/*.json` is the source; `bundled/`, `src/schemas.generated.ts`, and
+  `src/types/contract.ts` are generated. `npm run quality` (and therefore CI) fails when a
+  generated file is stale.
+- **CI**: Node 20/22 on the JavaScript side, PHP 8.3/8.4 on the PHP side.
 
-### Megjegyzés
+### Note
 
-Ezzel a kiadással az `aura` `docs/schema/` és a `laravel-aura` `.claude/docs/schema/`
-könyvtára másolattá vált. A `laravel-aura` action-planjének **NY1** kérdése („hol él
-kanonikusan a schema?") ezzel eldőlt: itt.
+With this release, the `aura` `docs/schema/` directory and the `laravel-aura`
+`.claude/docs/schema/` directory became copies. The **NY1** question in the `laravel-aura`
+action plan (“where does the schema live canonically?”) is settled: here.

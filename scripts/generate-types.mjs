@@ -21,6 +21,7 @@ const outputPath = join(repoRoot, 'src', 'types', 'contract.ts');
 const ENTRYPOINTS = [
     ['AuraResponse', 'schema/bundled/aura-response.bundle.json'],
     ['AuraRequest', 'schema/bundled/aura-request.bundle.json'],
+    ['AuraErrorReport', 'schema/bundled/aura-error-report.bundle.json'],
 ];
 
 /**

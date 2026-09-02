@@ -8,6 +8,7 @@
 export type { AuraSchemaDocument, AuraContractManifest } from './schemas.generated.js';
 
 export {
+    auraErrorReportSchema,
     auraRequestSchema,
     auraResponseSchema,
     commonSchema,
@@ -28,6 +29,7 @@ export {
 
 import type { AuraSchemaDocument } from './schemas.generated.js';
 import {
+    auraErrorReportSchema,
     auraRequestSchema,
     auraResponseSchema,
     commonSchema,
@@ -69,6 +71,7 @@ export const allSchemas: readonly AuraSchemaDocument[] = Object.freeze([
     staticSchema,
     auraRequestSchema,
     auraResponseSchema,
+    auraErrorReportSchema,
 ]);
 
 /**

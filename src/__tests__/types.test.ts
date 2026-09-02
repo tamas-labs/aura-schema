@@ -3,8 +3,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { auraContractManifest } from '../contract.js';
-import type { AuraRequest, AuraResponse } from '../types/contract.js';
-import { validateAuraRequest, validateAuraResponse } from '../validate.js';
+import type { AuraErrorReport, AuraRequest, AuraResponse } from '../types/contract.js';
+import { validateAuraErrorReport, validateAuraRequest, validateAuraResponse } from '../validate.js';
 
 const repoRoot = join(import.meta.dirname, '..', '..');
 
@@ -40,10 +40,26 @@ const request: AuraRequest = {
     globalSearch: 'ada',
 };
 
+const errorReport: AuraErrorReport = {
+    errors: [
+        {
+            severity: 'warning',
+            level: 'warning',
+            timestamp: '2026-09-02T12:00:00.000Z',
+            component: 'HeaderValidator',
+            action: 'validate',
+            type: 'validation',
+            message: 'Invalid header structure in API response',
+            key: 'header',
+        },
+    ],
+};
+
 describe('generated types', () => {
     it('describe payloads the schema also accepts', () => {
         expect(validateAuraResponse(response).issues).toEqual([]);
         expect(validateAuraRequest(request).issues).toEqual([]);
+        expect(validateAuraErrorReport(errorReport).issues).toEqual([]);
     });
 
     it('type the shipped examples', () => {

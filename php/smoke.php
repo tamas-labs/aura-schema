@@ -61,6 +61,7 @@ foreach ($manifest['schemas'] as $relative) {
 
 check('responsePath() resolves', is_file(AuraSchema::responsePath()));
 check('requestPath() resolves', is_file(AuraSchema::requestPath()));
+check('errorReportPath() resolves', is_file(AuraSchema::errorReportPath()));
 check('path() accepts a bare name', is_file(AuraSchema::path('header')));
 check('path() accepts a nested name', is_file(AuraSchema::path('column-configs/badge')));
 check('path() accepts a full filename', is_file(AuraSchema::path('header.schema.json')));

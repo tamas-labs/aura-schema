@@ -10,7 +10,12 @@
 import Ajv2020 from 'ajv/dist/2020.js';
 import type { ErrorObject, Options, ValidateFunction } from 'ajv';
 
-import { allSchemas, auraRequestSchema, auraResponseSchema } from './schemas.js';
+import {
+    allSchemas,
+    auraErrorReportSchema,
+    auraRequestSchema,
+    auraResponseSchema,
+} from './schemas.js';
 
 /**
  * One schema violation, flattened to the bits worth showing a developer.
@@ -155,6 +160,28 @@ export function validateAuraResponse(payload: unknown, ajv = shared()): AuraVali
  */
 export function validateAuraRequest(payload: unknown, ajv = shared()): AuraValidationResult {
     const validate = compiledFor(ajv, auraRequestSchema.$id);
+    const valid = validate(payload) as boolean;
+
+    return { valid, issues: valid ? [] : toIssues(validate.errors) };
+}
+
+/**
+ * Validates a payload against `aura-error-report.schema.json`.
+ *
+ * This is what Aura POSTs to `errorReportingEndpoint` — useful for asserting
+ * that an ingest endpoint accepts every batch the table can send.
+ *
+ * A receiver should validate **per entry**, not to decide the response code:
+ * Aura retries every non-2xx answer and then re-queues the batch, so rejecting
+ * a malformed entry with a 4xx turns it into an unrepeatable request that is
+ * repeated forever. Drop the entry, keep the rest, answer `202`.
+ *
+ * @param payload - The candidate batch, already parsed from JSON.
+ * @param ajv - Optional instance from `createAuraValidator`.
+ * @returns Whether it validates, plus every violation found.
+ */
+export function validateAuraErrorReport(payload: unknown, ajv = shared()): AuraValidationResult {
+    const validate = compiledFor(ajv, auraErrorReportSchema.$id);
     const valid = validate(payload) as boolean;
 
     return { valid, issues: valid ? [] : toIssues(validate.errors) };

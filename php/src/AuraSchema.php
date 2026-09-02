@@ -84,6 +84,18 @@ final class AuraSchema
     }
 
     /**
+     * Absolute path of the schema an error report is validated against.
+     *
+     * This is the batch Aura POSTs to `errorReportingEndpoint`, not part of the
+     * request/response contract — an ingest endpoint validates against it, a
+     * table endpoint never sees it.
+     */
+    public static function errorReportPath(): string
+    {
+        return self::path('aura-error-report');
+    }
+
+    /**
      * One schema document, decoded.
      *
      * @param  string  $name  Same forms as {@see self::path()}.
@@ -148,7 +160,7 @@ final class AuraSchema
      * are the same contract flattened into one file, for tools that cannot
      * follow cross-file `$ref`s.
      *
-     * @param  string  $name  `request` or `response`.
+     * @param  string  $name  `request`, `response` or `error-report`.
      *
      * @throws RuntimeException When the manifest lists no such bundle.
      */
@@ -166,7 +178,7 @@ final class AuraSchema
     /**
      * Absolute path of one of the shipped example payloads.
      *
-     * @param  string  $name  `request` or `response`.
+     * @param  string  $name  `request`, `response` or `error-report`.
      *
      * @throws RuntimeException When the manifest lists no such example.
      */

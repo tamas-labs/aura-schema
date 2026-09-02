@@ -17,6 +17,7 @@ export type { AuraContractManifest } from './contract.js';
 export {
     allSchemas,
     schemasById,
+    auraErrorReportSchema,
     auraRequestSchema,
     auraResponseSchema,
     commonSchema,
