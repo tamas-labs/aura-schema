@@ -22,7 +22,7 @@ final class AuraSchema
      *
      * Mirrors `contract.json`; a test asserts the two never drift.
      */
-    public const VERSION = '1.0';
+    public const string VERSION = '1.0';
 
     /**
      * The `$id` prefix every schema document shares.
