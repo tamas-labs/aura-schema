@@ -22,7 +22,7 @@ final class AuraSchema
      *
      * Mirrors `contract.json`; a test asserts the two never drift.
      */
-    public const string VERSION = '1.0';
+    public const VERSION = '1.0';
 
     /**
      * The `$id` prefix every schema document shares.
@@ -34,7 +34,7 @@ final class AuraSchema
      * $resolver->registerPrefix(AuraSchema::BASE_URI, AuraSchema::directory());
      * ```
      */
-    public const string BASE_URI = 'https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/';
+    public const BASE_URI = 'https://raw.githubusercontent.com/tamas-labs/aura-schema/main/schema/';
 
     /**
      * Absolute path of the directory holding the schema documents.

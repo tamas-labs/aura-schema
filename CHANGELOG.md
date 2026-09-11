@@ -29,6 +29,15 @@ version gets a minor bump, while `contract.json` → `version` does not.
   the `validateAuraErrorReport()` function on the `/validate` subpath, and
   `AuraSchema::errorReportPath()` on the PHP side.
 
+### Changed
+
+- **The Composer package requires PHP `^8.2`** instead of `^8.3`. The only 8.3 feature it used was
+  the native type on the `AuraSchema::VERSION` and `AuraSchema::BASE_URI` constants; both lose the
+  type and keep their value, so nothing a consumer reads changes. The reason is `laravel-aura`,
+  which supports Laravel 12 and with it PHP 8.2 — its suite pulls this package as a dev
+  dependency, so a `^8.3` floor here made its PHP 8.2 leg uninstallable. CI now runs the PHP smoke
+  checks on 8.2 as well.
+
 ### Fixed
 
 > The release under the `[1.0.0]` section **has not been tagged yet** — the fixes below will
