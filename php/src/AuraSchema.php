@@ -21,8 +21,11 @@ final class AuraSchema
      * Version of the Aura JSON contract described by this package.
      *
      * Mirrors `contract.json`; a test asserts the two never drift.
+     *
+     * Deliberately untyped: a native-typed class constant is PHP 8.3 syntax,
+     * and a parse error on the 8.2 floor `composer.json` declares.
      */
-    public const string VERSION = '1.0';
+    public const VERSION = '1.0';
 
     /**
      * The `$id` prefix every schema document shares.

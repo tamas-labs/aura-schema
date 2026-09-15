@@ -40,6 +40,13 @@ version gets a minor bump, while `contract.json` → `version` does not.
 
 ### Fixed
 
+- **`AuraSchema::VERSION` is untyped again, so the package really parses on PHP 8.2.** The `v1.1.0`
+  tag declared `^8.2` but shipped `public const string VERSION` — the type had been removed and
+  then put back, because the JavaScript test that keeps the PHP constant in step with
+  `contract.json` matched the typed declaration literally. On PHP 8.2 loading the class is a
+  `ParseError`, which failed 52 tests on `laravel-aura`'s PHP 8.2 leg. The test now matches the
+  untyped form and says why when it does not.
+
 > The release under the `[1.0.0]` section **has not been tagged yet** — the fixes below will
 > therefore be included in that tag when it is created, not in a subsequent release.
 

@@ -66,8 +66,14 @@ describe('contract manifest', () => {
 
     it('keeps the PHP side on the same version', () => {
         const php = readFileSync(join(repoRoot, 'php', 'src', 'AuraSchema.php'), 'utf8');
-        const version = /public const string VERSION = '([^']+)'/.exec(php)?.[1];
+        // Matches the untyped declaration only. `const string VERSION` is PHP 8.3
+        // syntax and a parse error on the 8.2 floor, so a regex that expects the
+        // type pushes the fix in the wrong direction — which is how v1.1.0 shipped.
+        const version = /public const VERSION = '([^']+)'/.exec(php)?.[1];
 
-        expect(version).toBe(AURA_CONTRACT_VERSION);
+        expect(
+            version,
+            "AuraSchema::VERSION must be declared as `public const VERSION = '…'` (untyped, for PHP 8.2)"
+        ).toBe(AURA_CONTRACT_VERSION);
     });
 });
